@@ -19,7 +19,7 @@ dependencies = [
 dev = ["pytest>=7,<9", "httpx>=0.27,<1"]
 
 [tool.setuptools.packages.find]
-include = ["market_data*", "pio_core*", "portfolio*", "server*", "strategies*", "research*", "execution*"]
+include = ["agent*", "market_data*", "pio_core*", "portfolio*", "server*", "strategies*", "research*", "execution*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

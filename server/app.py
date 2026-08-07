@@ -15,6 +15,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
+from agent import run_guarded_audit
 from market_data import AlpacaMarketDataProvider, MarketDataService, PortfolioSnapshotProvider, QuoteRequest, TushareRealtimeProvider
 from market_data.service import routes_from_env
 from execution import ExecutionService
@@ -105,6 +106,14 @@ class ExternalSubmissionRequest(BaseModel):
     max_price_deviation: Decimal = Field(default=Decimal("0.05"), gt=0, le=Decimal("0.20"))
 
 
+class GoaiAuditRequest(BaseModel):
+    task: str = Field(
+        default="验证低波动 ETF 轮动策略是否已经具备进入模拟交易的证据。",
+        min_length=8,
+        max_length=500,
+    )
+
+
 @app.get("/api/health")
 def health():
     return {
@@ -114,6 +123,11 @@ def health():
         "version": app.version,
         "market_data": market_data.status(),
         "execution_adapter": execution.status(),
+        "goai_planner": {
+            "provider": "DashScope/Qwen",
+            "configured": bool(os.getenv("DASHSCOPE_API_KEY", "").strip()),
+            "model": os.getenv("DASHSCOPE_MODEL", "qwen-plus"),
+        },
     }
 
 
@@ -192,6 +206,13 @@ def research_demo_backtest():
         walk_forward_train_window=504,
         walk_forward_test_window=126,
     )
+
+
+@app.post("/api/goai/audit-demo")
+def goai_audit_demo(request: GoaiAuditRequest):
+    """Run the golden demo without granting the agent execution authority."""
+
+    return run_guarded_audit(research_demo_backtest(), request.task)
 
 
 @app.get("/api/execution/status")

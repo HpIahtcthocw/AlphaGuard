@@ -6,9 +6,6 @@
   <title>Personal Investment OS</title>
   <meta name="description" content="本地优先的个人投资研究与组合工作台" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 fill=%22%2317201f%22/><text x=%2232%22 y=%2239%22 text-anchor=%22middle%22 font-family=%22monospace%22 font-size=%2220%22 fill=%22white%22>PIO</text></svg>">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Mono&family=IBM+Plex+Sans+CN:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
@@ -28,11 +25,12 @@
       </div>
 
       <nav class="nav-list">
-        <button class="nav-item active" data-view="today" type="button"><span class="nav-index">01</span><span>今日</span></button>
-        <button class="nav-item" data-view="portfolio" type="button"><span class="nav-index">02</span><span>组合</span></button>
-        <button class="nav-item" data-view="research" type="button"><span class="nav-index">03</span><span>研究</span></button>
-        <button class="nav-item" data-view="backtest" type="button"><span class="nav-index">04</span><span>回测</span></button>
-        <button class="nav-item" data-view="plans" type="button"><span class="nav-index">05</span><span>交易计划</span><span class="nav-badge">2</span></button>
+        <button class="nav-item active" data-view="alphaGuard" type="button"><span class="nav-index">01</span><span>AlphaGuard</span><span class="nav-new">GOAI</span></button>
+        <button class="nav-item" data-view="today" type="button"><span class="nav-index">02</span><span>今日</span></button>
+        <button class="nav-item" data-view="portfolio" type="button"><span class="nav-index">03</span><span>组合</span></button>
+        <button class="nav-item" data-view="research" type="button"><span class="nav-index">04</span><span>研究</span></button>
+        <button class="nav-item" data-view="backtest" type="button"><span class="nav-index">05</span><span>回测</span></button>
+        <button class="nav-item" data-view="plans" type="button"><span class="nav-index">06</span><span>交易计划</span><span class="nav-badge">2</span></button>
       </nav>
 
       <div class="sidebar-bottom">
@@ -44,11 +42,92 @@
 
     <main class="main-content">
       <header class="topbar">
-        <div class="topbar-context"><span class="eyebrow">2026年8月2日 · 周日</span><span class="live-label"><span class="status-dot"></span>市场休市</span></div>
+        <div class="topbar-context"><span class="eyebrow">2026年8月8日 · 周六</span><span class="live-label"><span class="status-dot"></span>研究环境</span></div>
         <div class="topbar-actions"><span class="sample-pill" id="accountStatusPill">示例账户 · CNY</span><button class="outline-button import-account-button" type="button" id="importAccountButton">导入账户</button><button class="quiet-button" type="button" id="refreshButton">刷新数据</button><button class="avatar" type="button" aria-label="账户菜单">L</button></div>
       </header>
 
-      <section id="todayView" class="view active-view">
+      <section id="alphaGuardView" class="view active-view">
+        <div class="page-heading alpha-heading">
+          <div>
+            <div class="alpha-kicker"><span class="eyebrow">GOAI · AGENT FOR FINANCE</span><span class="alpha-mode-pill" id="alphaPlannerPill">检查规划器中</span></div>
+            <h1>回测很好看。<br>它却拒绝下单。</h1>
+            <p>AlphaGuard 先验证证据，再决定一条策略是否有资格进入模拟交易。Agent 可以规划工具，但不能改写风险门禁。</p>
+          </div>
+          <div class="alpha-heading-proof"><span class="eyebrow">执行权限</span><strong>VETO &gt; AGENT</strong><small>确定性门禁拥有最终否决权</small></div>
+        </div>
+
+        <div class="alpha-workspace">
+          <section class="panel alpha-task-panel">
+            <div class="alpha-panel-head">
+              <div><span class="eyebrow">当前审计任务</span><h2>低波动 ETF 轮动策略</h2></div>
+              <span class="dataset-stamp">SYNTHETIC_DEMO</span>
+            </div>
+            <label class="alpha-task-field" for="alphaTaskInput">
+              <span>提交给研究 Agent</span>
+              <textarea id="alphaTaskInput" rows="3">验证低波动 ETF 轮动策略是否已经具备进入模拟交易的证据。</textarea>
+            </label>
+            <div class="alpha-scope">
+              <span>工具范围</span>
+              <div><code>inspect_dataset</code><code>run_backtest</code><code>audit_backtest</code><code>apply_risk_gate</code></div>
+            </div>
+            <button class="alpha-run-button" id="runAlphaGuardButton" type="button">
+              <span class="alpha-run-icon" aria-hidden="true">›</span>
+              <span><strong>开始证据审计</strong><small>运行真实回测工具 · 不创建订单</small></span>
+            </button>
+            <p class="alpha-error" id="alphaError" role="alert" hidden></p>
+          </section>
+
+          <section class="panel alpha-trace-panel" aria-labelledby="alphaTraceTitle">
+            <div class="alpha-panel-head">
+              <div><span class="eyebrow">LIVE TOOL TRACE</span><h2 id="alphaTraceTitle">执行链路</h2></div>
+              <span class="alpha-run-id mono" id="alphaRunId">尚未运行</span>
+            </div>
+            <ol class="alpha-trace" id="alphaTrace">
+              <li data-alpha-step="1"><span class="trace-index">01</span><div><strong>理解任务</strong><small>Qwen 或规则规划器</small></div><b>等待</b></li>
+              <li data-alpha-step="2"><span class="trace-index">02</span><div><strong>检查数据</strong><small>来源、完整性、指纹</small></div><b>等待</b></li>
+              <li data-alpha-step="3"><span class="trace-index">03</span><div><strong>运行回测</strong><small>策略与三条基线</small></div><b>等待</b></li>
+              <li data-alpha-step="4"><span class="trace-index">04</span><div><strong>审计稳定性</strong><small>样本外与 Walk-forward</small></div><b>等待</b></li>
+              <li data-alpha-step="5"><span class="trace-index">05</span><div><strong>风险门禁</strong><small>确定性代码裁决</small></div><b>等待</b></li>
+            </ol>
+          </section>
+        </div>
+
+        <section class="alpha-result" id="alphaResult" aria-live="polite" hidden>
+          <div class="alpha-verdict-block">
+            <div class="alpha-verdict-copy">
+              <span class="eyebrow">FINAL VERDICT · RISK GATE</span>
+              <strong id="alphaVerdict">BLOCKED</strong>
+              <h2 id="alphaHeadline">这笔交易，我拒绝执行。</h2>
+              <p id="alphaSummary">回测看起来不错，但证据还不够可信。</p>
+            </div>
+            <div class="alpha-order-lock"><span>ORDER INTENT</span><strong id="alphaOrderStatus">NOT CREATED</strong><small>Agent 无法绕过门禁</small></div>
+          </div>
+
+          <div class="alpha-evidence-grid">
+            <section class="panel alpha-metrics-panel">
+              <div class="alpha-panel-head"><div><span class="eyebrow">AUDIT EVIDENCE</span><h2>不是观点，是运行结果</h2></div><span class="dataset-stamp">合成数据明示</span></div>
+              <div class="alpha-metrics">
+                <div><span>样本外年化</span><strong id="alphaOosReturn">—</strong><small>不代表未来收益</small></div>
+                <div><span>样本外回撤</span><strong id="alphaOosDrawdown">—</strong><small>回测引擎计算</small></div>
+                <div><span>Walk-forward</span><strong id="alphaFoldCount">—</strong><small>滚动验证窗口</small></div>
+                <div><span>数据指纹</span><strong class="mono fingerprint" id="alphaFingerprint">—</strong><small>可复现实验输入</small></div>
+              </div>
+            </section>
+            <section class="panel alpha-gates-panel">
+              <div class="alpha-panel-head"><div><span class="eyebrow">HARD GATES</span><h2>为什么被拒绝</h2></div><span class="alpha-gate-count" id="alphaGateCount">—</span></div>
+              <div class="alpha-gate-list" id="alphaGateList"></div>
+            </section>
+          </div>
+
+          <details class="panel alpha-receipts">
+            <summary><span><span class="eyebrow">THE RECEIPTS</span><strong>展开完整 Agent Trace</strong></span><span>查看原始证据</span></summary>
+            <div class="alpha-receipt-list" id="alphaReceiptList"></div>
+          </details>
+          <div class="disclaimer"><span class="disclaimer-mark">i</span><span id="alphaDisclaimer">仅用于研究流程演示，不构成投资建议，不代表真实收益。</span></div>
+        </section>
+      </section>
+
+      <section id="todayView" class="view">
         <div class="page-heading">
           <div><span class="eyebrow">周末复盘</span><h1>先看风险，再看机会。</h1><p>系统把今天最值得你确认的三件事放在这里。所有数字均来自本地示例数据。</p></div>
           <div class="heading-actions"><button class="outline-button" type="button" data-view-target="research">记录一个想法</button><button class="solid-button" type="button" data-view-target="plans">查看待确认计划 <span>2</span></button></div>
@@ -120,5 +199,6 @@
   <script src="./paper-loop.js?v=2"></script>
   <script src="./financial-skills.js?v=2"></script>
   <script src="./research-ui.js?v=1"></script>
+  <script src="./alpha-guard.js?v=1"></script>
 </body>
 </html>
