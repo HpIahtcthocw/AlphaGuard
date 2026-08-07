@@ -1,0 +1,7 @@
+symbol,name,market,currency,quantity,avg_cost,last_price,asset_type
+510300,沪深300ETF,CN,CNY,1000,3.75,3.91,ETF
+515180,中证红利ETF,CN,CNY,600,1.35,1.42,ETF
+AAPL,Apple Inc.,US,USD,10,212,225.50,STOCK
+MSFT,Microsoft Corp.,US,USD,5,430,445.20,STOCK
+CASH_CNY,人民币现金,CN,CNY,20000,1,1,CASH
+CASH_USD,美元现金,US,USD,1800,1,1,CASH

@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "personal-investment-os"
+version = "0.3.0"
+description = "Local-first, auditable personal investment research and paper-trading system"
+requires-python = ">=3.9"
+dependencies = [
+  "fastapi>=0.111,<1",
+  "uvicorn>=0.30,<1",
+  "pydantic>=2.7,<3",
+  "pandas>=1.5,<3",
+  "numpy>=1.23,<3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7,<9", "httpx>=0.27,<1"]
+
+[tool.setuptools.packages.find]
+include = ["market_data*", "pio_core*", "portfolio*", "server*", "strategies*", "research*", "execution*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

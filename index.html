@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Personal Investment OS</title>
+  <meta name="description" content="本地优先的个人投资研究与组合工作台" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 fill=%22%2317201f%22/><text x=%2232%22 y=%2239%22 text-anchor=%22middle%22 font-family=%22monospace%22 font-size=%2220%22 fill=%22white%22>PIO</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Mono&family=IBM+Plex+Sans+CN:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="主导航">
+      <div class="brand-block">
+        <div class="brand-mark" aria-hidden="true">PIO</div>
+        <div>
+          <div class="brand-name">Personal<br>Investment OS</div>
+          <div class="brand-caption">个人投资工作台</div>
+        </div>
+      </div>
+
+      <div class="workspace-switcher">
+        <span class="eyebrow">工作区</span>
+        <button class="workspace-button" type="button"><span>我的投资账户</span><span class="chevron">⌄</span></button>
+      </div>
+
+      <nav class="nav-list">
+        <button class="nav-item active" data-view="today" type="button"><span class="nav-index">01</span><span>今日</span></button>
+        <button class="nav-item" data-view="portfolio" type="button"><span class="nav-index">02</span><span>组合</span></button>
+        <button class="nav-item" data-view="research" type="button"><span class="nav-index">03</span><span>研究</span></button>
+        <button class="nav-item" data-view="backtest" type="button"><span class="nav-index">04</span><span>回测</span></button>
+        <button class="nav-item" data-view="plans" type="button"><span class="nav-index">05</span><span>交易计划</span><span class="nav-badge">2</span></button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="sync-status"><span class="status-dot"></span><span>本地数据已同步</span><span class="mono">09:32</span></div>
+        <div class="mode-note"><span class="eyebrow">当前模式</span><strong>模拟盘</strong><span id="marketDataStatus">行情源：检查中</span></div>
+        <button class="settings-button" type="button"><span class="settings-glyph">+</span><span>设置与数据源</span></button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-context"><span class="eyebrow">2026年8月2日 · 周日</span><span class="live-label"><span class="status-dot"></span>市场休市</span></div>
+        <div class="topbar-actions"><span class="sample-pill" id="accountStatusPill">示例账户 · CNY</span><button class="outline-button import-account-button" type="button" id="importAccountButton">导入账户</button><button class="quiet-button" type="button" id="refreshButton">刷新数据</button><button class="avatar" type="button" aria-label="账户菜单">L</button></div>
+      </header>
+
+      <section id="todayView" class="view active-view">
+        <div class="page-heading">
+          <div><span class="eyebrow">周末复盘</span><h1>先看风险，再看机会。</h1><p>系统把今天最值得你确认的三件事放在这里。所有数字均来自本地示例数据。</p></div>
+          <div class="heading-actions"><button class="outline-button" type="button" data-view-target="research">记录一个想法</button><button class="solid-button" type="button" data-view-target="plans">查看待确认计划 <span>2</span></button></div>
+        </div>
+
+        <div class="metric-grid">
+          <article class="metric-card primary-metric"><div class="metric-label">组合净值</div><div class="metric-value">¥ 128,640<span class="metric-suffix">.20</span></div><div class="metric-foot"><span class="positive">+6.42%</span><span>今年以来</span></div><div class="sparkline" aria-label="组合净值近六个月趋势"><span style="height:32%"></span><span style="height:48%"></span><span style="height:42%"></span><span style="height:60%"></span><span style="height:55%"></span><span style="height:76%"></span><span style="height:68%"></span><span style="height:91%"></span></div></article>
+          <article class="metric-card"><div class="metric-label">现金比例</div><div class="metric-value">18.6<span class="metric-suffix">%</span></div><div class="metric-foot"><span class="neutral">目标 15–25%</span><span>流动性充足</span></div><div class="mini-meter"><span style="width:62%"></span></div><div class="meter-labels"><span>0%</span><span>舒适区</span><span>100%</span></div></article>
+          <article class="metric-card risk-metric"><div class="metric-label">组合回撤</div><div class="metric-value">-3.18<span class="metric-suffix">%</span></div><div class="metric-foot"><span class="warning">接近观察线</span><span>观察线 -5%</span></div><div class="risk-line"><span class="risk-line-fill" style="width:63%"></span><span class="risk-marker"></span></div><div class="meter-labels"><span>0</span><span>当前</span><span>-5%</span></div></article>
+        </div>
+
+        <div class="content-grid">
+          <section class="panel focus-panel"><div class="panel-heading"><div><span class="eyebrow">需要你的判断</span><h2>今天的三张卡片</h2></div><button class="text-button" type="button" data-view-target="plans">全部计划 →</button></div>
+            <div class="focus-list">
+              <article class="focus-item"><div class="focus-number">01</div><div class="focus-body"><div class="focus-title-row"><h3>沪深300 ETF 需要再平衡</h3><span class="tag teal">组合偏离</span></div><p>当前权重 34.8%，高于目标上限 30%。如果下周开盘仍高于上限，系统建议分两次调整。</p><div class="focus-meta"><span>依据：目标权重规则</span><span>影响：中</span><button class="inline-action" type="button" data-plan="rebalance">查看计划</button></div></div></article>
+              <article class="focus-item"><div class="focus-number">02</div><div class="focus-body"><div class="focus-title-row"><h3>回测结果必须先经过审计</h3><span class="tag sand">研究流程</span></div><p>系统会同时跑策略、买入持有、等权和趋势基线，并把样本外表现、数据质量和成本一起展示。</p><div class="focus-meta"><span>需要：运行真实数据回测</span><span>状态：等待数据</span><button class="inline-action" type="button" data-view-target="backtest">打开报告</button></div></div></article>
+              <article class="focus-item"><div class="focus-number">03</div><div class="focus-body"><div class="focus-title-row"><h3>组合风险仍在可接受范围</h3><span class="tag green">无需操作</span></div><p>行业集中度、单一标的暴露和现金比例均通过门禁。唯一需要留意的是科技行业暴露较上月提升 4.2%。</p><div class="focus-meta"><span>最后检查：今天 09:30</span><span>状态：通过</span><button class="inline-action" type="button" data-view-target="portfolio">查看组合</button></div></div></article>
+            </div>
+          </section>
+          <aside class="panel brief-panel"><div class="panel-heading"><div><span class="eyebrow">快速摘要</span><h2>组合温度</h2></div><span class="status-label"><span class="status-dot"></span>稳定</span></div><div class="temperature"><div class="temperature-number">72</div><div class="temperature-copy"><strong>稳中有进</strong><p>没有触发硬性风险门禁。当前最重要的动作是确认再平衡计划，而不是寻找新的交易。</p></div></div><div class="allocation-bars"><div class="allocation-row"><span>股票 / ETF</span><div class="allocation-track"><span style="width:81%"></span></div><b>81.4%</b></div><div class="allocation-row"><span>现金</span><div class="allocation-track"><span class="cash" style="width:18.6%"></span></div><b>18.6%</b></div></div><div class="panel-note">系统提示：模型观点不会自动改变你的组合。</div></aside>
+        </div>
+
+        <section class="panel evidence-panel"><div class="panel-heading"><div><span class="eyebrow">证据摘要</span><h2>最近一次决策留下了什么</h2></div><span class="mono muted">DECISION / 2026-07-31</span></div><div class="evidence-grid"><div class="evidence-block"><span class="evidence-kicker">事实</span><strong>沪深300 ETF 过去 20 日波动率下降</strong><p>来源：本地行情快照 · 截至 7 月 31 日</p></div><div class="evidence-block"><span class="evidence-kicker">判断</span><strong>暂不追涨，等待权重回到目标区间</strong><p>记录人：本人 · 置信度：中</p></div><div class="evidence-block"><span class="evidence-kicker">未知</span><strong>下周开盘的成交滑点</strong><p>需要在纸面交易中继续观察</p></div><button class="outline-button evidence-button" type="button" data-view-target="research">打开决策日志</button></div></section>
+        <div class="disclaimer"><span class="disclaimer-mark">i</span><span>这是一个投资记录和研究工具，不构成投资建议。示例账户数据用于展示界面，不代表真实收益。</span></div>
+      </section>
+
+      <section id="portfolioView" class="view"><div class="page-heading compact"><div><span class="eyebrow">组合总览</span><h1>你的钱现在在哪里？</h1><p>先理解暴露，再讨论收益。所有持仓都可以追溯到交易流水。</p></div><button class="solid-button" type="button" id="addHoldingButton">+ 添加一笔记录</button></div><div class="portfolio-layout"><section class="panel holdings-panel"><div class="panel-heading"><div><span class="eyebrow">持仓明细</span><h2>5 个标的 · ¥128,640.20</h2></div><span class="sample-pill">示例数据</span></div><div class="holdings-table"><div class="table-row table-head"><span>标的</span><span>市值</span><span>权重</span><span>日变化</span><span>状态</span></div><div class="table-row"><strong>沪深300 ETF <small>510300</small></strong><span>¥44,795</span><span>34.8%</span><span class="positive">+0.42%</span><span class="tag teal">偏高</span></div><div class="table-row"><strong>中证红利 ETF <small>515180</small></strong><span>¥25,016</span><span>19.4%</span><span class="positive">+0.18%</span><span class="tag green">正常</span></div><div class="table-row"><strong>科创50 ETF <small>588000</small></strong><span>¥18,102</span><span>14.1%</span><span class="negative">-0.66%</span><span class="tag sand">观察</span></div><div class="table-row"><strong>纳斯达克100 ETF <small>513100</small></strong><span>¥16,427</span><span>12.8%</span><span class="positive">+0.31%</span><span class="tag green">正常</span></div><div class="table-row"><strong>现金及货币基金</strong><span>¥24,300</span><span>18.9%</span><span class="neutral">—</span><span class="tag green">正常</span></div></div></section><aside class="panel exposure-panel"><div class="panel-heading"><div><span class="eyebrow">风险暴露</span><h2>一眼看懂集中度</h2></div></div><div class="exposure-chart"><div class="donut"><div class="donut-center"><strong>81.4%</strong><span>风险资产</span></div></div><div class="legend"><div><span class="legend-dot teal-dot"></span><span>宽基指数</span><b>47.6%</b></div><div><span class="legend-dot coral-dot"></span><span>行业主题</span><b>14.1%</b></div><div><span class="legend-dot ink-dot"></span><span>海外资产</span><b>12.8%</b></div><div><span class="legend-dot gray-dot"></span><span>现金</span><b>18.6%</b></div></div></div><div class="panel-note">集中度检查：通过。主题资产没有超过 20% 门槛。</div></aside></div></section>
+
+      <section id="researchView" class="view"><div class="page-heading compact"><div><span class="eyebrow">研究工作台</span><h1>把“我觉得”变成可验证的问题。</h1><p>不需要先学会量化。系统会帮你从假设、证据和失效条件开始。</p></div><button class="solid-button" type="button" id="newHypothesisButton">+ 新建研究卡片</button></div><div class="research-layout"><section class="panel research-list-panel"><div class="panel-heading"><div><span class="eyebrow">我的研究</span><h2>正在进行与已完成</h2></div><div class="segmented"><button class="segment active" type="button">全部</button><button class="segment" type="button">进行中</button><button class="segment" type="button">已完成</button></div></div><div class="research-card"><div class="research-card-top"><span class="tag sand">待审计</span><span class="mono muted">HYP-024</span></div><h3>低波动 ETF 轮动</h3><p>当市场波动上升时，低波动 ETF 能否降低组合回撤，同时保留大部分上涨空间？</p><div class="research-progress"><div><span>研究进度</span><b>70%</b></div><div class="progress-track"><span style="width:70%"></span></div></div><div class="research-card-foot"><span>下一步：阅读回测审计</span><button class="inline-action" type="button" data-view-target="backtest">打开研究</button></div></div><div class="research-card"><div class="research-card-top"><span class="tag teal">进行中</span><span class="mono muted">HYP-023</span></div><h3>红利因子是否仍然有效</h3><p>在过去 10 年中，高股息、低波动的组合是否提供了足够的风险补偿？</p><div class="research-progress"><div><span>研究进度</span><b>25%</b></div><div class="progress-track"><span style="width:25%"></span></div></div><div class="research-card-foot"><span>下一步：确认数据范围</span><button class="inline-action" type="button">继续编辑</button></div></div></section><aside class="panel research-guide"><div class="panel-heading"><div><span class="eyebrow">研究向导</span><h2>每张卡片都回答四个问题</h2></div></div><div class="guide-list"><div><span>01</span><strong>你认为会发生什么？</strong><p>用一句可以被数据证伪的话写出来。</p></div><div><span>02</span><strong>为什么可能发生？</strong><p>写下经济直觉，不要只写技术指标。</p></div><div><span>03</span><strong>什么时候算失败？</strong><p>提前写失效条件，避免事后解释。</p></div><div><span>04</span><strong>下一步是什么？</strong><p>先回测，再纸面交易，最后才考虑执行。</p></div></div><div class="panel-note">AI 可以帮你整理和质疑，但不会替你定义风险。</div></aside></div></section>
+
+      <section id="backtestView" class="view"><div class="page-heading compact"><div><span class="eyebrow">策略回测</span><h1>先看它怎么失败。</h1><p>回测结果不是承诺。我们优先展示回撤、成本和失效区间。</p></div><button class="outline-button" type="button" id="runBacktestButton">运行合成审计演示</button></div><section class="panel backtest-hero"><div class="backtest-summary"><div><span class="eyebrow" id="backtestDatasetLabel">等待数据集</span><h2 id="backtestPeriod">尚未运行回测</h2></div><div class="backtest-score"><span>稳健性评分</span><strong id="backtestScore">—</strong><small id="backtestScoreNote">不提供未经运行的评分</small></div></div><div class="backtest-chart"><div class="chart-y"><span>160k</span><span>120k</span><span>80k</span><span>40k</span><span>0</span></div><svg id="backtestChart" viewBox="0 0 800 260" preserveAspectRatio="none" role="img" aria-label="运行回测后显示净值曲线"><path class="grid-line" d="M0 40H800M0 95H800M0 150H800M0 205H800"/><path class="benchmark-line" id="benchmarkLine" d=""/><path class="strategy-line" id="strategyLine" d=""/></svg><div class="chart-labels"><span id="backtestStartLabel">—</span><span id="backtestMidLabel">—</span><span id="backtestEndLabel">—</span></div></div><div class="chart-legend"><span><i class="legend-line strategy"></i>策略净值 <b id="strategyFinalEquity">—</b></span><span><i class="legend-line benchmark"></i>基准净值 <b id="benchmarkFinalEquity">—</b></span><span class="muted" id="backtestDataNote">没有结果时不显示收益数字</span></div></section><div class="backtest-metrics"><div><span>年化收益</span><strong class="positive" id="annualizedReturn">—</strong><small id="benchmarkReturn">基准 —</small></div><div><span>最大回撤</span><strong class="negative" id="maxDrawdown">—</strong><small>由引擎计算</small></div><div><span>波动率</span><strong id="annualizedVolatility">—</strong><small id="sharpeRatio">Sharpe —</small></div><div><span>交易成本</span><strong id="costDrag">—</strong><small id="tradeDays">交易日 —</small></div></div><div class="panel-note" id="backtestWarnings">请导入或提交价格数据；合成演示只用于验证引擎，不代表真实收益。</div></section>
+
+      <section id="plansView" class="view"><div class="page-heading compact"><div><span class="eyebrow">交易计划</span><h1>决定之前，先把风险写下来。</h1><p>这里没有“一键买入”。每个计划都要经过规则检查和你的确认。</p></div><button class="solid-button" type="button" id="newPlanButton">+ 创建计划</button></div><div class="plan-layout"><section class="panel plan-list-panel"><div class="panel-heading"><div><span class="eyebrow">待确认</span><h2>2 个计划需要你的判断</h2></div><span class="tag coral">模拟盘</span></div><article class="plan-card"><div class="plan-card-head"><div><span class="tag teal">再平衡</span><span class="mono muted">PLAN-018</span></div><span class="plan-time">有效期至 08-05</span></div><h3>降低沪深300 ETF 权重</h3><div class="plan-target"><div><span>当前</span><strong>34.8%</strong></div><div class="arrow">→</div><div><span>目标</span><strong>29.0%</strong></div><div class="plan-delta">-5.8%</div></div><div class="plan-reason"><span>为什么现在？</span><p>当前权重超过你的 30% 上限。建议分两次调整，避免一次性成交带来的价格偏离。</p></div><div class="plan-checks"><span class="check-pass">✓ 数据新鲜</span><span class="check-pass">✓ 集中度通过</span><span class="check-warn">! 需人工确认</span></div><div class="plan-actions"><button class="outline-button" type="button" data-plan="details">查看证据</button><button class="solid-button" type="button" data-plan="approve">确认模拟计划</button></div></article><article class="plan-card"><div class="plan-card-head"><div><span class="tag sand">观察</span><span class="mono muted">PLAN-017</span></div><span class="plan-time">有效期至 08-09</span></div><h3>科创50 ETF 暂不加仓</h3><div class="plan-target single"><div><span>当前权重</span><strong>14.1%</strong></div><div class="plan-delta neutral">保持不变</div></div><div class="plan-reason"><span>为什么现在？</span><p>回测显示在波动率高于 28% 时追加仓位的胜率下降，当前指标尚未回到舒适区。</p></div><div class="plan-checks"><span class="check-pass">✓ 风险边界清晰</span><span class="check-warn">! 等待新数据</span></div><div class="plan-actions"><button class="outline-button" type="button" data-plan="details">查看证据</button><button class="quiet-button" type="button" data-plan="snooze">稍后提醒</button></div></article></section><aside class="panel guardrail-panel"><div class="panel-heading"><div><span class="eyebrow">风控门禁</span><h2>先检查，再行动</h2></div></div><div class="guardrail-list"><div><span class="guardrail-icon pass">✓</span><div><strong>数据新鲜度</strong><p>最新快照：2026-07-31</p></div><b class="positive">通过</b></div><div><span class="guardrail-icon pass">✓</span><div><strong>组合集中度</strong><p>最大单项权重：34.8%</p></div><b class="positive">通过</b></div><div><span class="guardrail-icon wait">!</span><div><strong>人工确认</strong><p>模拟盘订单必须逐笔确认</p></div><b class="warning">等待</b></div><div><span class="guardrail-icon lock">×</span><div><strong>实盘执行</strong><p>当前环境已禁用</p></div><b class="muted">锁定</b></div></div><div class="panel-note">风险门禁可以阻止计划，但不会替你做决定。</div></aside></div></section>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="modal-backdrop" id="accountImportModal" hidden>
+    <section class="import-dialog" role="dialog" aria-modal="true" aria-labelledby="importDialogTitle">
+      <header class="import-dialog-header">
+        <div><span class="eyebrow">本地账户接入</span><h2 id="importDialogTitle">一键导入你的持仓或交易流水</h2><p>文件只在当前浏览器中解析，不会上传到服务器。</p></div>
+        <button class="modal-close" id="closeImportModal" type="button" aria-label="关闭">×</button>
+      </header>
+      <div class="import-steps" aria-label="导入步骤"><span class="active">1 选择文件</span><span>2 检查字段</span><span>3 写入本地账户</span></div>
+      <div class="import-body">
+        <div class="drop-zone" id="accountDropZone" tabindex="0">
+          <input id="accountFileInput" type="file" accept=".csv,text/csv" hidden>
+          <div class="drop-zone-mark">CSV</div>
+          <strong>拖入券商导出的 CSV</strong>
+          <p>或点击选择文件。支持中英文列名、A 股/ETF、美股以及 CNY/USD。</p>
+          <button class="solid-button" id="chooseAccountFile" type="button">选择 CSV 文件</button>
+        </div>
+        <aside class="import-options">
+          <div class="option-block"><span class="eyebrow">当前支持</span><strong>持仓快照 / 交易流水</strong><p>通用模板可直接导入；其他券商格式会先尝试自动识别。</p></div>
+          <label class="fx-field"><span>USD/CNY 换算汇率</span><input id="usdCnyRate" type="number" min="1" max="20" step="0.0001" value="7.2000"><small>这是手工汇率，不冒充实时行情。</small></label>
+          <button class="text-button download-template" id="downloadAccountTemplate" type="button">下载通用持仓模板 →</button>
+        </aside>
+      </div>
+      <section class="import-preview" id="accountImportPreview" hidden>
+        <div class="preview-heading"><div><span class="eyebrow">自动识别结果</span><h3 id="importPreviewTitle">准备导入</h3></div><span class="tag teal" id="detectedSchemaTag">持仓快照</span></div>
+        <div class="preview-summary" id="importPreviewSummary"></div>
+        <div class="preview-table-wrap"><table class="preview-table"><thead id="importPreviewHead"></thead><tbody id="importPreviewBody"></tbody></table></div>
+        <div class="import-errors" id="importErrors" hidden></div>
+      </section>
+      <footer class="import-dialog-footer"><span id="selectedFileName">尚未选择文件</span><div><button class="quiet-button" id="cancelAccountImport" type="button">取消</button><button class="solid-button" id="confirmAccountImport" type="button" disabled>确认导入本地账户</button></div></footer>
+    </section>
+  </div>
+  <script src="./app.js"></script>
+  <script src="./account-import.js?v=4"></script>
+  <script src="./paper-loop.js?v=2"></script>
+  <script src="./financial-skills.js?v=2"></script>
+  <script src="./research-ui.js?v=1"></script>
+</body>
+</html>

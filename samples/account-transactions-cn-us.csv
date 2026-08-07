@@ -1,0 +1,4 @@
+date,symbol,name,market,currency,side,quantity,price,fee
+2026-07-02,510300,沪深300ETF,CN,CNY,BUY,1000,3.75,5
+2026-07-10,AAPL,Apple Inc.,US,USD,BUY,10,212,1
+2026-07-18,MSFT,Microsoft Corp.,US,USD,BUY,5,430,1
