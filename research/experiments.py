@@ -80,15 +80,15 @@ def run_personal_investment_experiment(
     out = report["out_of_sample_metrics"]
     baseline = report["baselines"]["BASE-BUY-HOLD"]["metrics"]
     gates = [
-        {"code": "DATA_PROVENANCE", "status": "PASS" if dataset_kind.upper() == "REAL_MARKET_DATA" else "BLOCKED", "message": "真实授权历史数据" if dataset_kind.upper() == "REAL_MARKET_DATA" else "当前实验数据不是授权真实市场数据"},
-        {"code": "OOS_DRAWDOWN", "status": "PASS" if out["max_drawdown"] >= baseline["max_drawdown"] else "WARN", "message": f"样本外最大回撤 {out['max_drawdown']:.2%}，买入持有基线 {baseline['max_drawdown']:.2%}"},
+        {"code": "DATA_PROVENANCE", "status": "PASS" if dataset_kind.upper() == "REAL_MARKET_DATA" else "BLOCKED", "message": "Authorized real historical market data" if dataset_kind.upper() == "REAL_MARKET_DATA" else "Current experiment data is not authorized real market data"},
+        {"code": "OOS_DRAWDOWN", "status": "PASS" if out["max_drawdown"] >= baseline["max_drawdown"] else "WARN", "message": f"Out-of-sample max drawdown {out['max_drawdown']:.2%}; buy-and-hold baseline {baseline['max_drawdown']:.2%}"},
         {"code": "WALK_FORWARD", "status": "PASS" if len(report["walk_forward"]["folds"]) >= 3 else "BLOCKED", "message": f"walk-forward folds={len(report['walk_forward']['folds'])}"},
-        {"code": "PAPER_RECONCILIATION", "status": "BLOCKED", "message": "尚未完成连续四周纸面盘与券商回报对账"},
+        {"code": "PAPER_RECONCILIATION", "status": "BLOCKED", "message": "Four consecutive weeks of paper-trading and brokerage return reconciliation not yet completed"},
     ]
     return {
         "experiment_id": EXPERIMENT_ID,
-        "title": "个人投资 OS：多市场防御型趋势轮动实验 v1",
-        "hypothesis": "在混合 A 股/美股代理资产和趋势切换环境中，趋势过滤、逆波动率和组合波动率目标有机会降低样本外回撤；不承诺提高收益。",
+        "title": "Personal Investment OS: multi-market defensive trend rotation experiment v1",
+        "hypothesis": "In a mixed environment of A-share/US equity proxy assets with trend regime switches, trend filtering, inverse-volatility weighting and portfolio volatility targeting have the opportunity to reduce out-of-sample drawdown; no improvement in returns is promised.",
         "protocol": {
             "strategy_id": "S-001",
             "rebalance": "calendar-month-end; next-session execution",
@@ -113,7 +113,7 @@ def run_personal_investment_experiment(
         "production_eligible": False,
         "gates": gates,
         "verdict": "RESEARCH_ONLY" if dataset_kind.upper() != "REAL_MARKET_DATA" else "NOT_READY",
-        "next_action": "替换为真实、复权、point-in-time 数据后重跑同一协议，再进入纸面盘；不得因合成实验结果下单。",
+        "next_action": "Replace with real, adjusted, point-in-time data, re-run the same protocol, then enter paper trading; do not place orders based on synthetic experiment results.",
     }
 
 

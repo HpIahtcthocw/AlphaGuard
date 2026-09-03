@@ -76,7 +76,7 @@ class PioStore:
         with self._connect() as connection:
             connection.executescript(SCHEMA)
 
-    def ensure_account(self, account_id: str = "default", name: str = "我的投资账户", base_currency: str = "CNY") -> str:
+    def ensure_account(self, account_id: str = "default", name: str = "My Investment Account", base_currency: str = "CNY") -> str:
         now = _now()
         with self._connect() as connection:
             cursor = connection.execute("INSERT OR IGNORE INTO accounts(id,name,base_currency,created_at) VALUES(?,?,?,?)", (account_id, name, base_currency, now))
@@ -351,7 +351,7 @@ def _apply_fill(positions, intent, fill_price: Decimal, quantity: Decimal, fee: 
     current["market_value"] = str(new_quantity * fill_price)
     rows[key] = current
     cash_key = f"CASH_{intent['currency']}|{intent['currency']}"
-    cash = rows.get(cash_key, {"symbol": f"CASH_{intent['currency']}", "name": f"{intent['currency']} 现金", "market": intent["market"], "currency": intent["currency"], "quantity": "0", "average_cost": "1", "last_price": "1", "market_value": "0", "asset_type": "CASH"})
+    cash = rows.get(cash_key, {"symbol": f"CASH_{intent['currency']}", "name": f"{intent['currency']} Cash", "market": intent["market"], "currency": intent["currency"], "quantity": "0", "average_cost": "1", "last_price": "1", "market_value": "0", "asset_type": "CASH"})
     cash_change = quantity * fill_price + fee
     cash_value = Decimal(str(cash["market_value"])) - cash_change if intent["side"] == "BUY" else Decimal(str(cash["market_value"])) + quantity * fill_price - fee
     if cash_value < 0:

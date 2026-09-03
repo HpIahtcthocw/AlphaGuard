@@ -64,7 +64,7 @@ def scan_universe(
         item["portfolio_weight"] = weights.get(item["symbol"], 0.0)
         item["portfolio_included"] = item["symbol"] in weights
         if item["direction"] == "SHORT" and not item["short_executable"]:
-            item["portfolio_exclusion_reason"] = "空头信号成立，但缺少可借券确认"
+            item["portfolio_exclusion_reason"] = "Short signal is valid but lacks borrowable-shares confirmation"
     gross = sum(abs(value) for value in weights.values())
     net = sum(weights.values())
     return {
@@ -78,7 +78,7 @@ def scan_universe(
         "long_candidates": [item["symbol"] for item in longs],
         "short_candidates": [item["symbol"] for item in shorts],
         "research_portfolio": {"weights": weights, "gross_exposure": round(gross, 8), "net_exposure": round(net, 8), "long_exposure": round(sum(value for value in weights.values() if value > 0), 8), "short_exposure": round(abs(sum(value for value in weights.values() if value < 0)), 8)},
-        "execution_note": "研究组合，不含保证金、借券、强平和市场规则；任何空头权重都必须再次通过执行风控。",
+        "execution_note": "Research portfolio without margin, securities lending, forced liquidation or other market rules; any short weight must pass execution risk controls again.",
         "research_only": True,
     }
 

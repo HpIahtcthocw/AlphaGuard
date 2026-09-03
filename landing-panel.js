@@ -1,4 +1,4 @@
-/* Firebreak 着陆层逻辑：实时门禁演示 + 进入工作台 */
+/* Firebreak landing layer: live risk-gate demo + enter workspace */
 (function(){
   var overlay=document.getElementById('ldOverlay');
   if(!overlay)return;
@@ -6,7 +6,7 @@
   function esc(s){var d=document.createElement('div');d.textContent=(s==null?'':s);return d.innerHTML;}
   function pct(v){if(v==null||isNaN(v))return '—';return (v*100).toFixed(2).replace(/^\s/,'')+'%';}
 
-  // 场景切换
+  // scenario switching
   var segBtns=[].slice.call(overlay.querySelectorAll('.ld-seg button'));
   var scenario='synthetic';
   segBtns.forEach(function(b){b.addEventListener('click',function(){
@@ -44,7 +44,7 @@
   var runBtn=overlay.querySelector('.ld-btn');
   runBtn.addEventListener('click',runAudit);
 
-  // 进入工作台
+  // enter workspace
   function enter(){
     overlay.addEventListener('transitionend',function(e){if(e.target===overlay)overlay.remove();});
     overlay.style.transition='opacity .28s ease,transform .28s ease';
@@ -52,6 +52,6 @@
   }
   [].slice.call(overlay.querySelectorAll('.ld-enter')).forEach(function(el){el.addEventListener('click',enter);});
 
-  // 首次自动跑一次
+  // auto-run once on first load
   setTimeout(runAudit,150);
 })();

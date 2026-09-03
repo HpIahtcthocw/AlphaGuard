@@ -59,7 +59,7 @@ class CNEquityRules(MarketRule):
             supports_short=False,
             price_tick=0.01,
             daily_price_limit_pct=limit,
-            session_note="T+1 股票；涨跌停、停牌和板块差异需以交易所/券商回报为准",
+            session_note="T+1 stocks; price limits, halts and board differences are subject to exchange/broker reporting",
         )
 
 
@@ -73,7 +73,7 @@ class USEquityRules(MarketRule):
             supports_short=True,
             price_tick=0.01,
             daily_price_limit_pct=None,
-            session_note="美股通常支持整股交易；做空仍需账户权限与实时借券可用性",
+            session_note="US stocks generally support whole-share trading; short selling still requires account permissions and live borrow availability",
         )
 
 

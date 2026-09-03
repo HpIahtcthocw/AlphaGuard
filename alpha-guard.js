@@ -25,11 +25,11 @@
       const planner = health.goai_planner;
       if (!planner) return;
       setPlannerPill(
-        planner.configured ? `Qwen 就绪 · ${planner.model}` : '规则演示 · Qwen Key 未配置',
+        planner.configured ? `Qwen ready · ${planner.model}` : 'Rule demo · Qwen Key not configured',
         planner.configured,
       );
     } catch (_) {
-      setPlannerPill('离线规则演示', false);
+      setPlannerPill('Offline rule demo', false);
     }
   }
 
@@ -37,9 +37,9 @@
     clearInterval(progressTimer);
     traceRows.forEach((row) => {
       row.classList.remove('running', 'completed', 'blocked');
-      row.querySelector('b').textContent = '等待';
+      row.querySelector('b').textContent = 'Waiting';
     });
-    document.getElementById('alphaRunId').textContent = '运行中';
+    document.getElementById('alphaRunId').textContent = 'Running';
   }
 
   function setTraceState(index, state, label) {
@@ -52,12 +52,12 @@
 
   function startTraceProgress() {
     let activeIndex = 0;
-    setTraceState(activeIndex, 'running', '执行中');
+    setTraceState(activeIndex, 'running', 'Auditing');
     progressTimer = setInterval(() => {
       if (activeIndex >= traceRows.length - 1) return;
-      setTraceState(activeIndex, 'completed', '完成');
+      setTraceState(activeIndex, 'completed', 'Done');
       activeIndex += 1;
-      setTraceState(activeIndex, 'running', '执行中');
+      setTraceState(activeIndex, 'running', 'Auditing');
     }, 340);
   }
 
@@ -66,7 +66,7 @@
     for (let index = 0; index < traceRows.length; index += 1) {
       const trace = data.trace[index];
       const blocked = trace?.status === 'BLOCKED';
-      setTraceState(index, blocked ? 'blocked' : 'completed', blocked ? '阻断' : '完成');
+      setTraceState(index, blocked ? 'blocked' : 'completed', blocked ? 'Blocked' : 'Done');
       await sleep(70);
     }
   }
@@ -91,12 +91,12 @@
       copy.append(title, detail);
 
       const status = document.createElement('b');
-      status.textContent = blocked ? '阻断' : '通过';
+      status.textContent = blocked ? 'Blocked' : 'Passed';
       item.append(mark, copy, status);
       list.append(item);
     });
     const blockedCount = checks.filter((check) => check.status === 'BLOCKED').length;
-    document.getElementById('alphaGateCount').textContent = `${blockedCount} / ${checks.length} 阻断`;
+    document.getElementById('alphaGateCount').textContent = `${blockedCount} / ${checks.length} blocked`;
   }
 
   function renderReceipts(trace) {
@@ -145,7 +145,7 @@
   async function runAudit() {
     const task = taskInput.value.trim();
     if (task.length < 8) {
-      errorPanel.textContent = '请用一句完整的话描述要审计的策略任务。';
+      errorPanel.textContent = 'Describe the strategy to audit in one complete sentence.';
       errorPanel.hidden = false;
       taskInput.focus();
       return;
@@ -157,7 +157,7 @@
     startTraceProgress();
     runButton.disabled = true;
     runButton.classList.add('running');
-    runButton.querySelector('strong').textContent = '正在运行证据审计';
+    runButton.querySelector('strong').textContent = 'Running evidence audit…';
 
     try {
       const response = await fetch('/api/goai/audit-demo', {
@@ -167,23 +167,23 @@
       });
       if (!response.ok) {
         const failure = await response.json().catch(() => ({}));
-        throw new Error(failure.detail || `审计接口返回 ${response.status}`);
+        throw new Error(failure.detail || `Audit API returned ${response.status}`);
       }
       const data = await response.json();
       await finishTrace(data);
       renderResult(data);
-      window.pioShowToast?.('审计完成：风险门禁拒绝创建订单意图。');
+      window.pioShowToast?.('Audit complete: risk gate blocked order-intent creation.');
     } catch (error) {
       clearInterval(progressTimer);
       const running = traceRows.findIndex((row) => row.classList.contains('running'));
-      if (running >= 0) setTraceState(running, 'blocked', '失败');
-      errorPanel.textContent = `审计未完成：${error.message}`;
+      if (running >= 0) setTraceState(running, 'blocked', 'Failed');
+      errorPanel.textContent = `Audit incomplete: ${error.message}`;
       errorPanel.hidden = false;
-      document.getElementById('alphaRunId').textContent = '运行失败';
+      document.getElementById('alphaRunId').textContent = 'Audit failed';
     } finally {
       runButton.disabled = false;
       runButton.classList.remove('running');
-      runButton.querySelector('strong').textContent = '再次运行证据审计';
+      runButton.querySelector('strong').textContent = 'Re-run evidence audit';
     }
   }
 

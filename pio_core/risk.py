@@ -43,8 +43,8 @@ def evaluate_order(
     market = market.upper()
     currency = currency.upper()
 
-    checks.append(_check("VALID_ORDER", quantity > 0 and reference_price > 0 and side in {"BUY", "SELL"}, "订单字段有效", "数量、价格或方向无效"))
-    checks.append(_check("ALLOWED_MARKET", market in {"CN", "US", "HK"}, f"市场 {market} 已允许", f"市场 {market} 未列入允许范围"))
+    checks.append(_check("VALID_ORDER", quantity > 0 and reference_price > 0 and side in {"BUY", "SELL"}, "Order fields are valid", "Quantity, price or side is invalid"))
+    checks.append(_check("ALLOWED_MARKET", market in {"CN", "US", "HK"}, f"Market {market} is allowed", f"Market {market} is not in the allowed list"))
     try:
         market_rule = get_market_rules(market)
     except ValueError:
@@ -53,16 +53,16 @@ def evaluate_order(
         # Mainland markets require board lots when opening/increasing a
         # position; selling an odd-lot remainder is permitted by many brokers.
         lot_valid = quantity > 0 and (side != "BUY" or quantity % Decimal(str(market_rule.lot_size)) == 0)
-        checks.append(_check("LOT_SIZE", lot_valid, f"数量符合 {market_rule.market} {market_rule.lot_size} 股交易单位（卖出零股余数可例外）", f"买入数量必须是 {market_rule.market} {market_rule.lot_size} 股交易单位的整数倍"))
+        checks.append(_check("LOT_SIZE", lot_valid, f"Quantity matches the {market_rule.market} {market_rule.lot_size}-share trading unit (selling odd-lot remainders excepted)", f"Buy quantity must be a multiple of the {market_rule.market} {market_rule.lot_size}-share trading unit"))
         short_requested = side in {"SELL_SHORT", "SHORT"}
-        checks.append(_check("SHORT_PERMISSION", not short_requested or market_rule.supports_short, "做空权限由市场规则允许", f"{market_rule.market} 市场规则不允许该股票做空"))
+        checks.append(_check("SHORT_PERMISSION", not short_requested or market_rule.supports_short, "Short selling is permitted by the market rules", f"{market_rule.market} market rules do not permit shorting this stock"))
 
     try:
         as_of = datetime.fromisoformat(snapshot_as_of.replace("Z", "+00:00")).date()
     except ValueError:
         as_of = date.min
     age = (date.today() - as_of).days
-    checks.append(_check("DATA_FRESHNESS", 0 <= age <= max_snapshot_age_days, f"账户快照距今 {age} 天", f"账户快照已过期或日期异常：{age} 天"))
+    checks.append(_check("DATA_FRESHNESS", 0 <= age <= max_snapshot_age_days, f"Account snapshot is {age} day(s) old", f"Account snapshot is stale or has an invalid date: {age} days"))
 
     total_base = Decimal("0")
     current_value_base = Decimal("0")
@@ -81,14 +81,14 @@ def evaluate_order(
 
     order_value = quantity * reference_price
     order_base = _convert(order_value, currency, fx_rates)
-    checks.append(_check("ORDER_SIZE", total_base > 0 and order_base / total_base <= max_order_weight, f"订单占组合 {(order_base / total_base if total_base else Decimal('0')):.1%}", f"订单超过组合 {max_order_weight:.0%} 上限"))
+    checks.append(_check("ORDER_SIZE", total_base > 0 and order_base / total_base <= max_order_weight, f"Order is {(order_base / total_base if total_base else Decimal('0')):.1%} of the portfolio", f"Order exceeds the {max_order_weight:.0%} portfolio limit"))
 
     if side == "BUY":
-        checks.append(_check("CASH_AVAILABLE", cash_available >= order_value, f"可用现金 {cash_available} {currency}", f"{currency} 现金不足"))
+        checks.append(_check("CASH_AVAILABLE", cash_available >= order_value, f"Available cash {cash_available} {currency}", f"Insufficient {currency} cash"))
         post_value = current_value_base + order_base
-        checks.append(_check("POSITION_LIMIT", total_base > 0 and post_value / total_base <= max_single_weight, f"交易后单项权重 {(post_value / total_base if total_base else Decimal('0')):.1%}", f"交易后单项权重超过 {max_single_weight:.0%}"))
+        checks.append(_check("POSITION_LIMIT", total_base > 0 and post_value / total_base <= max_single_weight, f"Post-trade single-position weight {(post_value / total_base if total_base else Decimal('0')):.1%}", f"Post-trade single-position weight exceeds {max_single_weight:.0%}"))
     else:
-        checks.append(_check("POSITION_AVAILABLE", current_quantity >= quantity, f"可卖数量 {current_quantity}", f"持仓不足：仅有 {current_quantity}"))
+        checks.append(_check("POSITION_AVAILABLE", current_quantity >= quantity, f"Sellable quantity {current_quantity}", f"Insufficient holdings: only {current_quantity}"))
 
     status = "PASS" if all(check.status == "PASS" for check in checks) else "FAIL"
     return RiskDecision(status, checks)

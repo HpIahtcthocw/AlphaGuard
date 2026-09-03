@@ -72,7 +72,7 @@ const accountImporter = (() => {
   }
 
   function processRows(rows, filename) {
-    if (rows.length < 2) throw new Error('CSV 至少需要表头和一行数据。');
+    if (rows.length < 2) throw new Error('CSV needs at least a header and one data row.');
     const rawHeaders = rows[0];
     const mappedHeaders = rawHeaders.map((header) => aliasLookup[normalizeHeader(header)] || null);
     const schema = mappedHeaders.includes('side') || mappedHeaders.includes('date') ? 'transactions' : 'holdings';
@@ -81,39 +81,39 @@ const accountImporter = (() => {
       const raw = {};
       mappedHeaders.forEach((key, cellIndex) => { if (key) raw[key] = cells[cellIndex]; });
       const symbol = String(raw.symbol || '').trim().toUpperCase();
-      if (!symbol) { errors.push(`第 ${index + 2} 行缺少证券代码`); return null; }
+      if (!symbol) { errors.push(`Row ${index + 2} is missing a security code`); return null; }
       const market = inferMarket(symbol, raw.market);
       const currency = String(raw.currency || (market === 'US' ? 'USD' : market === 'HK' ? 'HKD' : 'CNY')).toUpperCase();
       if (schema === 'transactions') {
         const quantity = numberValue(raw.quantity); const price = numberValue(raw.lastPrice);
-        if (!raw.date || !normalizeSide(raw.side) || quantity === null || price === null) errors.push(`第 ${index + 2} 行交易字段不完整`);
+        if (!raw.date || !normalizeSide(raw.side) || quantity === null || price === null) errors.push(`Row ${index + 2} has incomplete transaction fields`);
         return { date: raw.date || '', symbol, name: raw.name || symbol, market, currency, side: normalizeSide(raw.side), quantity: quantity || 0, price: price || 0, fee: numberValue(raw.fee) || 0 };
       }
       const quantity = numberValue(raw.quantity); const lastPrice = numberValue(raw.lastPrice); const suppliedValue = numberValue(raw.marketValue);
-      if (quantity === null) errors.push(`第 ${index + 2} 行缺少有效持仓数量`);
-      if (lastPrice === null && suppliedValue === null) errors.push(`第 ${index + 2} 行缺少当前价或市值`);
+      if (quantity === null) errors.push(`Row ${index + 2} is missing a valid quantity`);
+      if (lastPrice === null && suppliedValue === null) errors.push(`Row ${index + 2} is missing a price or market value`);
       const assetType = String(raw.assetType || (/CASH|现金|货币/.test(`${symbol}${raw.name || ''}`) ? 'CASH' : market === 'CN' && /^5/.test(symbol) ? 'ETF' : 'STOCK')).toUpperCase();
       return { symbol, name: raw.name || symbol, market, currency, quantity: quantity || 0, avgCost: numberValue(raw.avgCost), lastPrice, marketValue: suppliedValue ?? ((quantity || 0) * (lastPrice || 0)), assetType };
     }).filter(Boolean);
-    if (!mappedHeaders.includes('symbol')) throw new Error('没有识别到证券代码列。请使用通用模板或包含 symbol/证券代码 字段。');
+    if (!mappedHeaders.includes('symbol')) throw new Error('Could not identify a security-code column. Use the generic template or a symbol field.');
     return { schema, records: normalized, errors, filename, importedAt: new Date().toISOString() };
   }
 
   function renderPreview(result) {
     const isHoldings = result.schema === 'holdings';
-    document.getElementById('importPreviewTitle').textContent = `${result.records.length} 条${isHoldings ? '持仓' : '交易'}记录已识别`;
-    document.getElementById('detectedSchemaTag').textContent = isHoldings ? '持仓快照' : '交易流水';
+    document.getElementById('importPreviewTitle').textContent = `${result.records.length} ${isHoldings ? 'holding' : 'transaction'} records detected`;
+    document.getElementById('detectedSchemaTag').textContent = isHoldings ? 'Holdings snapshot' : 'Transaction history';
     document.getElementById('selectedFileName').textContent = result.filename;
     const markets = [...new Set(result.records.map((item) => item.market))].join(' / ');
     const currencies = [...new Set(result.records.map((item) => item.currency))].join(' / ');
-    document.getElementById('importPreviewSummary').innerHTML = `<span>市场 ${escapeHTML(markets || '未知')}</span><span>币种 ${escapeHTML(currencies || '未知')}</span><span>异常 ${result.errors.length}</span>`;
-    const columns = isHoldings ? ['代码', '名称', '市场', '币种', '数量', '市值'] : ['日期', '代码', '方向', '数量', '价格', '币种'];
+    document.getElementById('importPreviewSummary').innerHTML = `<span>Markets ${escapeHTML(markets || 'unknown')}</span><span>Currencies ${escapeHTML(currencies || 'unknown')}</span><span>Issues ${result.errors.length}</span>`;
+    const columns = isHoldings ? ['Code', 'Name', 'Market', 'Currency', 'Qty', 'Value'] : ['Date', 'Code', 'Side', 'Qty', 'Price', 'Currency'];
     document.getElementById('importPreviewHead').innerHTML = `<tr>${columns.map((item) => `<th>${item}</th>`).join('')}</tr>`;
     document.getElementById('importPreviewBody').innerHTML = result.records.slice(0, 6).map((record) => isHoldings
       ? `<tr><td>${escapeHTML(record.symbol)}</td><td>${escapeHTML(record.name)}</td><td>${record.market}</td><td>${record.currency}</td><td>${formatNumber(record.quantity)}</td><td>${formatMoney(record.marketValue, record.currency)}</td></tr>`
       : `<tr><td>${escapeHTML(record.date)}</td><td>${escapeHTML(record.symbol)}</td><td>${record.side}</td><td>${formatNumber(record.quantity)}</td><td>${formatMoney(record.price, record.currency)}</td><td>${record.currency}</td></tr>`).join('');
     errorsBox.hidden = result.errors.length === 0;
-    errorsBox.textContent = result.errors.length ? `需要复核：${result.errors.slice(0, 4).join('；')}` : '';
+    errorsBox.textContent = result.errors.length ? `Needs review: ${result.errors.slice(0, 4).join('; ')}` : '';
     preview.hidden = false;
     confirmButton.disabled = result.records.length === 0 || result.errors.length >= result.records.length;
     document.querySelectorAll('.import-steps span').forEach((step, index) => step.classList.toggle('active', index <= 1));
@@ -126,14 +126,14 @@ const accountImporter = (() => {
     const total = converted.reduce((sum, record) => sum + record.cnyValue, 0);
     const cash = converted.filter((record) => record.assetType === 'CASH').reduce((sum, record) => sum + record.cnyValue, 0);
     const table = document.querySelector('.holdings-table');
-    table.innerHTML = '<div class="table-row table-head"><span>标的</span><span>市值</span><span>权重</span><span>日变化</span><span>状态</span></div>' + converted.map((record) => {
+    table.innerHTML = '<div class="table-row table-head"><span>Symbol</span><span>Value</span><span>Weight</span><span>Daily</span><span>Status</span></div>' + converted.map((record) => {
       const localValue = formatMoney(record.marketValue, record.currency);
       const valueLabel = record.currency === 'CNY' ? localValue : `${localValue}<small>≈ ¥${formatNumber(record.cnyValue)}</small>`;
-      return `<div class="table-row"><strong>${escapeHTML(record.name)}<small>${escapeHTML(record.symbol)} · ${record.market} · ${record.currency}</small></strong><span>${valueLabel}</span><span>${total ? (record.cnyValue / total * 100).toFixed(1) : '0.0'}%</span><span class="neutral">待行情</span><span class="tag teal">已导入</span></div>`;
+      return `<div class="table-row"><strong>${escapeHTML(record.name)}<small>${escapeHTML(record.symbol)} · ${record.market} · ${record.currency}</small></strong><span>${valueLabel}</span><span>${total ? (record.cnyValue / total * 100).toFixed(1) : '0.0'}%</span><span class="neutral">Awaiting quote</span><span class="tag teal">Imported</span></div>`;
     }).join('');
-    document.querySelector('.holdings-panel .panel-heading h2').textContent = `${converted.length} 个标的 · ¥${formatNumber(total)}`;
-    document.querySelector('.holdings-panel .sample-pill').textContent = '本地导入';
-    document.getElementById('accountStatusPill').textContent = `本地账户 · ${[...new Set(converted.map((record) => record.currency))].join('/')}`;
+    document.querySelector('.holdings-panel .panel-heading h2').textContent = `${converted.length} positions · ¥${formatNumber(total)}`;
+    document.querySelector('.holdings-panel .sample-pill').textContent = 'Local import';
+    document.getElementById('accountStatusPill').textContent = `Local account · ${[...new Set(converted.map((record) => record.currency))].join('/')}`;
     const metricValue = document.querySelector('.primary-metric .metric-value');
     if (metricValue) metricValue.innerHTML = `¥ ${formatNumber(total)}<span class="metric-suffix">.00</span>`;
     const cashMetric = document.querySelector('.metric-grid .metric-card:nth-child(2) .metric-value');
@@ -143,7 +143,7 @@ const accountImporter = (() => {
   async function confirmImport() {
     if (!pendingImport) return;
     confirmButton.disabled = true;
-    confirmButton.textContent = '写入中…';
+    confirmButton.textContent = 'Writing…';
     const usdCny = Number(document.getElementById('usdCnyRate').value) || 7.2;
     const account = { ...pendingImport, usdCny };
     const key = account.schema === 'holdings' ? 'pio.account.holdings' : 'pio.account.transactions';
@@ -155,8 +155,8 @@ const accountImporter = (() => {
       catch (_) { /* local import remains available when the API is offline */ }
     }
     document.querySelectorAll('.import-steps span').forEach((step) => step.classList.add('active'));
-    window.pioShowToast?.(account.schema === 'holdings' ? `已导入 ${account.records.length} 条持仓${coreResult ? '，并写入不可变账本快照' : '，当前保存在本地浏览器'}。` : `已保存 ${account.records.length} 条交易流水，等待账本服务核对。`);
-    confirmButton.textContent = '确认导入本地账户';
+    window.pioShowToast?.(account.schema === 'holdings' ? `Imported ${account.records.length} holdings${coreResult ? ' — written to the immutable ledger snapshot' : ' — saved in this browser for now.'}.` : `Saved ${account.records.length} transaction records to await ledger reconciliation.`);
+    confirmButton.textContent = 'Confirm local account import';
     closeModal();
   }
 
@@ -178,7 +178,7 @@ const accountImporter = (() => {
     localStorage.setItem('pio.core.snapshot', result.snapshot_id);
     account.coreManaged = true;
     localStorage.setItem('pio.account.holdings', JSON.stringify(account));
-    document.getElementById('accountStatusPill').textContent = '本地账本 · CNY/USD';
+    document.getElementById('accountStatusPill').textContent = 'Local ledger · CNY/USD';
     return result;
   }
 
@@ -195,12 +195,12 @@ const accountImporter = (() => {
     };
     localStorage.setItem('pio.account.holdings', JSON.stringify(account));
     renderHoldings(account);
-    document.getElementById('accountStatusPill').textContent = '本地账本 · CNY/USD';
+    document.getElementById('accountStatusPill').textContent = 'Local ledger · CNY/USD';
   }
 
   function handleFile(file) {
     if (!file) return;
-    if (!/\.csv$/i.test(file.name)) { window.pioShowToast?.('目前只支持 CSV 文件。'); return; }
+    if (!/\.csv$/i.test(file.name)) { window.pioShowToast?.('Only CSV files are supported for now.'); return; }
     const reader = new FileReader();
     reader.onload = () => {
       try { pendingImport = processRows(parseCSV(String(reader.result)), file.name); renderPreview(pendingImport); }
@@ -210,7 +210,7 @@ const accountImporter = (() => {
   }
 
   function downloadTemplate() {
-    const csv = '\uFEFFsymbol,name,market,currency,quantity,avg_cost,last_price,asset_type\n510300,沪深300ETF,CN,CNY,1000,3.75,3.91,ETF\nAAPL,Apple Inc.,US,USD,10,212,225.50,STOCK\nCASH_USD,美元现金,US,USD,1800,1,1,CASH';
+    const csv = '\uFEFFsymbol,name,market,currency,quantity,avg_cost,last_price,asset_type\n510300,CSI 300 ETF,CN,CNY,1000,3.75,3.91,ETF\nAAPL,Apple Inc.,US,USD,10,212,225.50,STOCK\nCASH_USD,USD Cash,US,USD,1800,1,1,CASH';
     const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
     const link = document.createElement('a'); link.href = url; link.download = 'pio-account-template.csv'; link.click(); URL.revokeObjectURL(url);
   }

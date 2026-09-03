@@ -19,7 +19,7 @@ ALLOWED_TOOLS = (
     "create_order_intent",
 )
 REQUIRED_AUDIT_TOOLS = ALLOWED_TOOLS[:-1]
-DEFAULT_TASK = "验证低波动 ETF 轮动策略是否已经具备进入模拟交易的证据。"
+DEFAULT_TASK = "Verify whether the low-volatility ETF rotation strategy has accumulated sufficient evidence to enter paper trading."
 
 
 @dataclass(frozen=True)
@@ -52,7 +52,7 @@ class GuardrailAgent:
 
     def plan(self, task: str) -> PlannerResult:
         if not self.api_key.strip():
-            return self._rule_fallback("未配置 DASHSCOPE_API_KEY；本次未调用 Qwen。")
+            return self._rule_fallback("No DASHSCOPE_API_KEY configured; Qwen was not called this time.")
 
         candidates = [self.model] + [m for m in ("qwen-turbo", "qwen-max") if m != self.model]
         for model in candidates:
@@ -60,7 +60,7 @@ class GuardrailAgent:
             if planned is not None:
                 return planned
         return self._rule_fallback(
-            "所有 Qwen 模型均不可用，已降级为确定性规则规划器；审计仍可继续。",
+            "All Qwen models were unavailable; fell back to the deterministic rule planner; the audit may still proceed.",
             configured=True,
         )
 
@@ -73,11 +73,11 @@ class GuardrailAgent:
                 {
                     "role": "system",
                     "content": (
-                        "你是个人投资研究流程的工具规划器，不提供投资建议。"
-                        "只能从 inspect_dataset、run_backtest、audit_backtest、apply_risk_gate、"
-                        "create_order_intent 中选择工具。风险门禁拥有最终否决权；"
-                        "只有 apply_risk_gate 判定 ELIGIBLE 后才允许 create_order_intent。"
-                        "返回 JSON：{\"tools\":[...],\"note\":\"...\"}。"
+                        "You are the tool planner for a personal investment research workflow and do not provide investment advice. "
+                        "You may only choose tools from inspect_dataset, run_backtest, audit_backtest, apply_risk_gate, "
+                        "and create_order_intent. The risk gate has final veto authority; "
+                        "create_order_intent is only allowed after apply_risk_gate returns ELIGIBLE. "
+                        "Return JSON: {\"tools\":[...],\"note\":\"...\"}."
                     ),
                 },
                 {"role": "user", "content": task},
@@ -98,10 +98,10 @@ class GuardrailAgent:
             return PlannerResult(
                 mode="QWEN",
                 model=model,
-                label=f"Qwen 规划器 · {model}",
+                label=f"Qwen planner · {model}",
                 tools=tools,
                 api_key_configured=True,
-                note=str(planned.get("note") or "Qwen 已生成受控工具计划。"),
+                note=str(planned.get("note") or "Qwen generated a controlled tool plan."),
             )
         except (KeyError, TypeError, ValueError, json.JSONDecodeError, urllib.error.URLError, TimeoutError):
             return None
@@ -120,7 +120,7 @@ class GuardrailAgent:
         return PlannerResult(
             mode="RULE_FALLBACK",
             model=self.model,
-            label="规则规划器演示（未调用 Qwen）",
+            label="Rule planner demo (Qwen not called)",
             tools=list(REQUIRED_AUDIT_TOOLS),
             api_key_configured=configured,
             note=note,
@@ -150,11 +150,11 @@ def run_guarded_audit(
         {
             "code": "DATASET_PROVENANCE",
             "status": "BLOCKED" if dataset_kind != "REAL_MARKET_DATA" else "PASSED",
-            "label": "数据来源可用于生产" if not en else "Data source is production-usable",
+            "label": "Data source is production-usable" if not en else "Data source is production-usable",
             "detail": (
-                "当前是明确标记的合成演示数据，不能支持交易决策。"
+                "Explicitly marked synthetic demo data; cannot support trading decisions."
                 if dataset_kind != "REAL_MARKET_DATA"
-                else "数据来源标记为真实市场数据。"
+                else "Data source is marked as real market data."
             )
             if not en
             else (
@@ -166,9 +166,9 @@ def run_guarded_audit(
         {
             "code": "DATA_QUALITY",
             "status": "BLOCKED" if data_quality.get("errors") else "PASSED",
-            "label": "数据质量检查" if not en else "Data quality check",
+            "label": "Data quality check" if not en else "Data quality check",
             "detail": (
-                f"{len(data_quality.get('errors') or [])} 个错误，{len(data_quality.get('warnings') or [])} 个警告。"
+                f"{len(data_quality.get('errors') or [])} errors, {len(data_quality.get('warnings') or [])} warnings."
                 if not en
                 else f"{len(data_quality.get('errors') or [])} errors, {len(data_quality.get('warnings') or [])} warnings."
             ),
@@ -176,9 +176,9 @@ def run_guarded_audit(
         {
             "code": "WALK_FORWARD",
             "status": "PASSED" if len(walk_forward.get("folds") or []) >= 3 else "BLOCKED",
-            "label": "Walk-forward 样本外验证" if not en else "Walk-forward out-of-sample validation",
+            "label": "Walk-forward out-of-sample validation" if not en else "Walk-forward out-of-sample validation",
             "detail": (
-                f"已运行 {len(walk_forward.get('folds') or [])} 个滚动窗口。"
+                f"Ran {len(walk_forward.get('folds') or [])} rolling windows."
                 if not en
                 else f"Ran {len(walk_forward.get('folds') or [])} rolling windows."
             ),
@@ -186,10 +186,10 @@ def run_guarded_audit(
         {
             "code": "PRODUCTION_READINESS",
             "status": "PASSED" if bool(backtest.get("production_eligible")) else "BLOCKED",
-            "label": "生产就绪条件" if not en else "Production readiness",
+            "label": "Production readiness" if not en else "Production readiness",
             "detail": (
                 "；".join(_translate_reason(reason, lang) for reason in reasons)
-                or ("引擎未返回生产准入结论。" if not en else "Engine returned no production eligibility verdict.")
+                or ("Engine returned no production eligibility verdict." if not en else "Engine returned no production eligibility verdict.")
             ),
         },
     ]
@@ -214,7 +214,7 @@ def run_guarded_audit(
             "sequence": 1,
             "tool": "planner",
             "status": "COMPLETED",
-            "title": "理解审计任务并约束工具范围" if not en else "Understand the task and constrain the tool scope",
+            "title": "Understand the task and constrain the tool scope" if not en else "Understand the task and constrain the tool scope",
             "summary": (
                 (
                     "No DASHSCOPE_API_KEY configured — no LLM was called; planning ran in deterministic rule mode."
@@ -234,9 +234,9 @@ def run_guarded_audit(
             "sequence": 2,
             "tool": "inspect_dataset",
             "status": "COMPLETED",
-            "title": "检查数据来源与指纹" if not en else "Inspect data source and fingerprint",
+            "title": "Inspect data source and fingerprint" if not en else "Inspect data source and fingerprint",
             "summary": (
-                f"识别为 {dataset_kind}，共 {int((backtest.get('period') or {}).get('sessions') or 0)} 个交易日。"
+                f"Identified as {dataset_kind}, {int((backtest.get('period') or {}).get('sessions') or 0)} trading sessions."
                 if not en
                 else f"Identified as {dataset_kind}, {int((backtest.get('period') or {}).get('sessions') or 0)} trading sessions."
             ),
@@ -246,9 +246,9 @@ def run_guarded_audit(
             "sequence": 3,
             "tool": "run_backtest",
             "status": "COMPLETED",
-            "title": "运行策略与三条基线" if not en else "Run the strategy and three baselines",
+            "title": "Run the strategy and three baselines" if not en else "Run the strategy and three baselines",
             "summary": (
-                "回测引擎已计算全样本、样本外表现、成本和基准差异。"
+                "Backtest engine computed full-sample, out-of-sample, cost and benchmark deltas."
                 if not en
                 else "Backtest engine computed full-sample, out-of-sample, cost and benchmark deltas."
             ),
@@ -258,9 +258,9 @@ def run_guarded_audit(
             "sequence": 4,
             "tool": "audit_backtest",
             "status": "COMPLETED",
-            "title": "执行样本外与 Walk-forward 审计" if not en else "Run out-of-sample and walk-forward audit",
+            "title": "Run out-of-sample and walk-forward audit" if not en else "Run out-of-sample and walk-forward audit",
             "summary": (
-                f"样本外年化收益 {_percent(out_of_sample.get('annualized_return'), lang)}，但不据此推断未来收益。"
+                f"Out-of-sample annualized return {_percent(out_of_sample.get('annualized_return'), lang)}; not an extrapolation of future returns."
                 if not en
                 else f"Out-of-sample annualized return {_percent(out_of_sample.get('annualized_return'), lang)}; not an extrapolation of future returns."
             ),
@@ -274,11 +274,11 @@ def run_guarded_audit(
             "sequence": 5,
             "tool": "apply_risk_gate",
             "status": decision,
-            "title": "确定性风险门禁做最终裁决" if not en else "Deterministic risk gate makes the final call",
+            "title": "Deterministic risk gate makes the final call" if not en else "Deterministic risk gate makes the final call",
             "summary": (
-                ("证据不足，拒绝进入模拟交易。" if not en else "Insufficient evidence — refused entry to paper trading.")
+                ("Insufficient evidence — refused entry to paper trading." if not en else "Insufficient evidence — refused entry to paper trading.")
                 if blocked
-                else ("全部硬性条件通过，可进入人工复核。" if not en else "All hard conditions passed; ready for human review.")
+                else ("All hard conditions passed; ready for human review." if not en else "All hard conditions passed; ready for human review.")
             ),
             "evidence": {"checks": checks, "llm_can_override": False},
         },
@@ -287,14 +287,14 @@ def run_guarded_audit(
             "tool": "create_order_intent",
             "status": "SKIPPED" if blocked else "REQUIRES_HUMAN_APPROVAL",
             "title": (
-                ("订单意图未创建" if not en else "Order intent not created")
+                ("Order intent not created" if not en else "Order intent not created")
                 if blocked
-                else ("等待人工批准后创建订单意图" if not en else "Awaiting human approval to create the order intent")
+                else ("Awaiting human approval to create the order intent" if not en else "Awaiting human approval to create the order intent")
             ),
             "summary": (
-                ("风险门禁已阻断执行路径，数据库未写入订单意图。" if not en else "Risk gate blocked the execution path; no order intent was written.")
+                ("Risk gate blocked the execution path; no order intent was written." if not en else "Risk gate blocked the execution path; no order intent was written.")
                 if blocked
-                else ("Agent 无权绕过人工批准。" if not en else "The agent has no authority to bypass human approval.")
+                else ("The agent has no authority to bypass human approval." if not en else "The agent has no authority to bypass human approval.")
             ),
             "evidence": {"created": order_intent_created, "reason": decision},
         },
@@ -305,14 +305,14 @@ def run_guarded_audit(
         "task": task,
         "verdict": decision,
         "headline": (
-            "这笔交易，我拒绝执行。" if blocked else "证据通过，等待你的最终判断。"
+            "This trade — I refuse to execute it." if blocked else "Evidence passed; awaiting your final call."
         )
         if not en
         else ("This trade — I refuse to execute it." if blocked else "Evidence passed; awaiting your final call."),
         "summary": (
-            "回测看起来不错，但数据来源和生产验证条件不够可信。"
+            "The backtest looks good, but the data provenance and production validation are not credible enough."
             if blocked
-            else "硬性门禁通过，但系统仍不会自动下单。"
+            else "Hard gates passed, but the system still will not auto-place orders."
         )
         if not en
         else (
@@ -340,7 +340,7 @@ def run_guarded_audit(
             "risk_gate": {"decision": decision, "checks": checks, "reasons": reasons},
         },
         "disclaimer": (
-            "仅用于研究流程演示，不构成投资建议，不代表真实收益。"
+            "Research workflow demo only; not investment advice; does not represent real returns."
             if not en
             else "Research workflow demo only; not investment advice; does not represent real returns."
         ),
@@ -364,7 +364,7 @@ def _number(value: object) -> Optional[float]:
 def _percent(value: object, lang: str = "zh") -> str:
     number = _number(value)
     if number is None:
-        return "n/a" if lang == "en" else "未知"
+        return "n/a" if lang == "en" else "n/a"
     return f"{number:.2%}"
 
 
@@ -372,8 +372,8 @@ def _translate_reason(reason: str, lang: str = "zh") -> str:
     if lang == "en":
         return reason
     translations = {
-        "requires independent data-vendor reconciliation": "缺少独立数据源交叉核验",
-        "requires walk-forward parameter stability and stress scenarios": "缺少参数稳定性与压力场景验证",
-        "requires at least four weeks of paper-trading reconciliation": "缺少至少四周模拟盘对账",
+        "requires independent data-vendor reconciliation": "requires independent data-vendor reconciliation",
+        "requires walk-forward parameter stability and stress scenarios": "requires walk-forward parameter stability and stress scenarios",
+        "requires at least four weeks of paper-trading reconciliation": "requires at least four weeks of paper-trading reconciliation",
     }
     return translations.get(reason, reason)

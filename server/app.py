@@ -180,7 +180,7 @@ class PersonalExperimentRequest(BaseModel):
 
 class GoaiAuditRequest(BaseModel):
     task: str = Field(
-        default="验证低波动 ETF 轮动策略是否已经具备进入模拟交易的证据。",
+        default="Verify whether the low-volatility ETF rotation strategy has accumulated sufficient evidence to enter paper trading.",
         min_length=8,
         max_length=500,
     )
@@ -363,7 +363,7 @@ def research_long_short_backtest(request: LongShortBacktestRequest):
             "equity": [{"date": date.date().isoformat(), "value": round(float(value), 6)} for date, value in result.equity.items()],
             "positions": [{"date": date.date().isoformat(), **{symbol: round(float(value), 8) for symbol, value in row.items()}} for date, row in result.positions.iterrows()],
             "research_only": True,
-            "execution_note": "包含借券、保证金和强平近似模型；不代表任何券商的实际可成交性。",
+            "execution_note": "Includes approximate models for borrow, margin and forced liquidation; does not represent any broker's actual fillability.",
         }
     except (TypeError, ValueError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -491,7 +491,7 @@ def sync_external_order(intent_id: str):
             "broker_order": saved,
             "status": status,
             "fills_reconciled": False,
-            "note": "订单状态已同步；成交数量、成交均价和现金账本仍需独立成交回报对账。",
+            "note": "Order status synced; fill quantities, average fill price and the cash ledger still require reconciliation against independent fill reports.",
         }
     except ValueError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc

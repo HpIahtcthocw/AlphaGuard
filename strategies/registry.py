@@ -33,10 +33,10 @@ def _load_regime_breakout():
 STRATEGY_REGISTRY: Dict[str, StrategySpec] = {
     "S-001": StrategySpec(
         strategy_id="S-001",
-        name="防御型 ETF 趋势轮动",
+        name="Defensive ETF Trend Rotation",
         version="0.2.0",
-        provenance="自研实现；方法借鉴时间序列动量、趋势过滤、逆波动率与组合波动率目标",
-        license_note="项目自有实现，不复制第三方源代码",
+        provenance="In-house implementation; methodology draws on time-series momentum, trend filtering, inverse-volatility weighting and portfolio volatility targeting",
+        license_note="Project-owned implementation; does not copy third-party source code",
         risk_level="medium",
         rebalance_frequency="calendar-month-end",
         supports_paper=True,
@@ -45,10 +45,10 @@ STRATEGY_REGISTRY: Dict[str, StrategySpec] = {
     ),
     "S-003": StrategySpec(
         strategy_id="S-003",
-        name="市场状态驱动多空突破",
+        name="Regime-driven long/short breakout",
         version="0.1.0",
-        provenance="自研实现；借鉴趋势跟随、Donchian 突破、量价确认和市场状态过滤",
-        license_note="项目自有实现，不复制第三方源代码",
+        provenance="In-house implementation; draws on trend following, Donchian breakout, volume-price confirmation and regime filtering",
+        license_note="Project-owned implementation; does not copy third-party source code",
         risk_level="high",
         rebalance_frequency="event-driven",
         supports_paper=False,
@@ -57,13 +57,13 @@ STRATEGY_REGISTRY: Dict[str, StrategySpec] = {
         mode="signal-only",
     ),
     "BASE-BUY-HOLD": StrategySpec(
-        "BASE-BUY-HOLD", "买入持有基线", "1.0.0", "标准研究基线", "项目自有实现", "market", "once", False, False, buy_and_hold_weights
+        "BASE-BUY-HOLD", "Buy-and-Hold Baseline", "1.0.0", "Standard research baseline", "Project-owned implementation", "market", "once", False, False, buy_and_hold_weights
     ),
     "BASE-EQUAL": StrategySpec(
-        "BASE-EQUAL", "月度等权基线", "1.0.0", "标准研究基线", "项目自有实现", "market", "calendar-month-end", False, False, equal_weight_monthly
+        "BASE-EQUAL", "Monthly Equal-Weight Baseline", "1.0.0", "Standard research baseline", "Project-owned implementation", "market", "calendar-month-end", False, False, equal_weight_monthly
     ),
     "BASE-TREND": StrategySpec(
-        "BASE-TREND", "趋势过滤基线", "1.0.0", "标准研究基线", "项目自有实现", "medium", "daily", False, False, trend_filter_equal_weight
+        "BASE-TREND", "Trend-Filtered Baseline", "1.0.0", "Standard research baseline", "Project-owned implementation", "medium", "daily", False, False, trend_filter_equal_weight
     ),
 }
 

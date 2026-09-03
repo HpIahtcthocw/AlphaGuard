@@ -86,7 +86,7 @@ def import_account_csv(source: Union[str, io.TextIOBase]) -> ImportResult:
         raise ValueError("CSV is missing a header row")
     column_map = {header: LOOKUP.get(_normalize_header(header)) for header in reader.fieldnames}
     if "symbol" not in column_map.values():
-        raise ValueError("CSV is missing a symbol/证券代码 column")
+        raise ValueError("CSV is missing a symbol/security-code column")
     schema = "transactions" if {"side", "date"}.intersection(column_map.values()) else "holdings"
     holdings: List[Holding] = []
     transactions: List[Transaction] = []

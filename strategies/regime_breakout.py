@@ -69,11 +69,11 @@ def evaluate_breakout_signal(
         direction = "SHORT"
     else:
         direction = "FLAT"
-    short_reason = "可借券条件未验证"
+    short_reason = "Borrowable-shares condition not verified"
     if direction == "SHORT" and shortable:
-        short_reason = "可借券字段已提供，仍需实时券源和保证金检查"
+        short_reason = "Borrowable-shares field provided; real-time securities lending source and margin checks still required"
     elif direction == "SHORT":
-        short_reason = "信号成立但不可执行：缺少可借券确认"
+        short_reason = "Signal is valid but not executable: borrowable-shares confirmation missing"
     return {
         "symbol": symbol.upper(), "market": market.upper(), "as_of": bars.index[-1].isoformat(),
         "strategy_id": "S-003", "strategy_version": "0.1.0", "direction": direction,
@@ -114,4 +114,4 @@ def _reasons(direction: str, long_conditions: Mapping[str, bool], short_conditio
         return [key for key, passed in long_conditions.items() if passed]
     if direction == "SHORT":
         return [key for key, passed in short_conditions.items() if passed] + [short_reason]
-    return ["核心条件不足，保持观察"]
+    return ["Core conditions insufficient; keeping under observation"]
