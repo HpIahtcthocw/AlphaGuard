@@ -58,9 +58,9 @@
     @media(max-width:940px){.hero{grid-template-columns:1fr;gap:40px}}
     .kicker{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--brand);background:#e9effc;border:1px solid #d3e0f7;padding:6px 13px;border-radius:999px;margin-bottom:22px}
     .kicker .dot{width:6px;height:6px;border-radius:50%;background:var(--brand)}
-    h1{font-size:clamp(38px,5.2vw,58px);line-height:1.05;letter-spacing:-.022em;margin:0 0 20px;font-weight:800;text-wrap:pretty;text-wrap:balance}
+    h1{font-size:clamp(38px,5.2vw,58px);line-height:1.05;letter-spacing:-.022em;margin:0 0 20px;font-weight:800;text-wrap:pretty;text-wrap:balance;overflow-wrap:break-word}
     h1 .accent{color:var(--brand)}
-    h1 .accent-line{position:relative;white-space:nowrap;color:var(--brand)}
+    h1 .accent-line{position:relative;color:var(--brand);-webkit-box-decoration-break:clone;box-decoration-break:clone}
     h1 .accent-line::after{content:"";position:absolute;left:-.05em;right:-.05em;bottom:.06em;height:.42em;background:linear-gradient(105deg,rgba(47,111,228,.18),rgba(47,111,228,.05));border-radius:.3em;z-index:-1}
     .sub{color:var(--muted);font-size:19px;line-height:1.55;margin:0 0 30px;max-width:540px;text-wrap:pretty}
     .sub em{color:var(--ink);font-style:normal;font-weight:600}
@@ -81,6 +81,11 @@
     .demo-body{padding:22px;display:flex;flex-direction:column;flex:1;min-height:0}
     label{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin:0 0 9px}
     label .hint{font-weight:500;text-transform:none;color:var(--faint);font-size:12px}
+    .seg{display:inline-flex;background:#eef0f4;border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px}
+    .seg button{border:0;background:transparent;font:600 12px/1 var(--mono);color:var(--muted);padding:7px 12px;border-radius:7px;cursor:pointer;transition:.15s}
+    .seg button.on{background:#fff;color:var(--ink);box-shadow:var(--sh-1)}
+    .seg button.on.bad{color:var(--red)}
+    .seg button.on.good{color:var(--green)}
     textarea{width:100%;min-height:96px;padding:13px 15px;border:1px solid var(--line2);border-radius:var(--r-md);font:14px/1.6 inherit;color:var(--ink);resize:vertical;background:var(--card);transition:border-color .16s,box-shadow .16s}
     textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(47,111,228,.13)}
     .row-actions{margin-top:15px;display:flex;align-items:center;gap:14px}
@@ -214,6 +219,13 @@
       <div class="demo-card">
         <div class="chrome"><span class="dots"><i></i><i></i><i></i></span><span class="url">/api/goai/audit-demo</span><span class="tag">SYNTHETIC_DEMO</span></div>
         <div class="demo-body">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px">
+            <span class="seg" id="scenarioSeg">
+              <button type="button" data-scenario="synthetic" class="on bad">UNPROVEN</button>
+              <button type="button" data-scenario="proven" class="">PROVEN</button>
+            </span>
+            <span style="font:11px/1 var(--mono);color:var(--faint)">toggle the evidence, watch the gate</span>
+          </div>
           <label for="task">Research task <span class="hint">natural language</span></label>
           <textarea id="task">Validate whether the low-volatility ETF rotation strategy has enough evidence to move from research to paper trading.</textarea>
           <div class="row-actions">
@@ -320,12 +332,20 @@ curl -X POST https://<span class="kw">YOUR_DEPLOYED_URL</span>/api/goai/audit-de
     });
   });
   function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+  var segBtns=[].slice.call(document.querySelectorAll('#scenarioSeg button'));
+  var currentScenario='synthetic';
+  segBtns.forEach(function(b){b.addEventListener('click',function(){
+    currentScenario=b.getAttribute('data-scenario');
+    segBtns.forEach(function(x){x.classList.remove('on','bad','good');
+      if(x===b){x.classList.add('on',currentScenario==='proven'?'good':'bad');}});
+    runDemo();
+  });});
   async function runDemo(){
     var btn=document.getElementById('runBtn'),spin=document.getElementById('spin'),res=document.getElementById('result');
     var task=document.getElementById('task').value.trim()||'Validate whether the low-volatility ETF rotation strategy has enough evidence to move from research to paper trading.';
     if(btn.disabled)return;btn.disabled=true;spin.style.display='inline-block';res.style.display='none';res.innerHTML='';
     try{
-      var r=await fetch('/api/goai/audit-demo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({task:task,lang:'en'})});
+      var r=await fetch('/api/goai/audit-demo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({task:task,lang:'en',scenario:currentScenario})});
       var d=await r.json();res.style.display='block';
       var blocked=d.verdict!=='ELIGIBLE';
       var head=document.createElement('div');head.className='verdict '+(blocked?'blocked':'eligible');

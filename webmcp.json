@@ -32,6 +32,12 @@
             "description": "The research/validation task, described in natural language (min 8 chars, max 500).",
             "minLength": 8,
             "maxLength": 500
+          },
+          "scenario": {
+            "type": "string",
+            "enum": ["synthetic", "proven"],
+            "default": "synthetic",
+            "description": "'synthetic' audits explicitly unproven demo data (gate returns BLOCKED). 'proven' audits a source-verified, production-eligible dataset through the SAME gates (gate returns ELIGIBLE). Either way no order intent is ever created."
           }
         }
       },

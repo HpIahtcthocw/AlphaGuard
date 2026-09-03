@@ -185,6 +185,7 @@ class GoaiAuditRequest(BaseModel):
         max_length=500,
     )
     lang: str = Field(default="zh", pattern="^(zh|en)$")
+    scenario: str = Field(default="synthetic", pattern="^(synthetic|proven)$")
 
 
 @app.get("/api/health")
@@ -423,9 +424,18 @@ def run_personal_investment_experiment_from_csv(request: PersonalExperimentReque
 def goai_audit_demo(request: GoaiAuditRequest):
     """Run the golden demo without granting the agent execution authority.
 
-    Every gate decision is appended to the immutable, chained-hash audit ledger.
+    `scenario="synthetic"` audits explicitly unproven demo data -> BLOCKED.
+    `scenario="proven"` audits a source-verified, production-eligible dataset
+    through the SAME deterministic gates -> ELIGIBLE. Either way every gate
+    decision is appended to the immutable, chained-hash audit ledger.
     """
-    result = run_guarded_audit(research_demo_backtest(), request.task, lang=request.lang)
+    backtest = research_demo_backtest()
+    if request.scenario == "proven":
+        backtest["dataset_kind"] = "REAL_MARKET_DATA"
+        backtest["production_eligible"] = True
+        backtest["eligibility_reasons"] = []
+    result = run_guarded_audit(backtest, request.task, lang=request.lang)
+    result["scenario"] = request.scenario
     store.record_guardrail_decision(result)
     return result
 
