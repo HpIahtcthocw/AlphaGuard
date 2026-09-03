@@ -1,100 +1,91 @@
-# AlphaGuard — Self-Recordable Demo Script (60–90s)
+# AlphaGuard — WebMCP-Compliant Demo Script (≤90s, 单人可录)
 
-> 这份脚本设计成**你一个人照着就能录完**：一个 1920×1080 浏览器窗口、一台录屏（OBS / QuickTime / Windows 录屏都行）、口播提前放旁边照着念即可。全程只有 5 个镜头，真实操作、无绿幕无剪辑依赖，切点都用"停 1 秒再点"来兜底。
-
----
-
-## 0. 录制前 5 分钟准备（照做）
-
-1. **固定视口**：浏览器窗口手动拉满到无滚动条的宽度（推荐 1280–1440 宽），刷新 `/`。
-2. **预先输入任务文本**：光标停在 task 输入框，但**先不点 Run**。
-   - 任务文本（照打）：`Validate the low-volatility ETF rotation strategy. Anything that passes without REAL market data should be blocked.`
-3. **准备好第二屏**：开一个浏览器标签已打开 `[你的URL]/webmcp.json`，备用；剪贴板里放 `/api/goai/audit-demo`。
-4. **口播**：把下方每镜头 VO 打印出来放旁边。不用背，对着念即可，语速放慢，念错就重录该镜头（镜头之间本来就有切点）。
-5. **录制设置**：60fps、音量先测一下、画质 1080p 起。结束一次录完所有镜头再剪，别逐镜头保存。
+> 本版按 WebMCP Challenge 官方验收逐条约束改写：
+> - **15 秒内展示项目在运行**（S1→S2 压缩，BLOCKED 结果在 ~12s 落地）
+> - **无实时打字**（任务文本提前粘贴好，只点不敲）
+> - **≤3 分钟**（全片 75–90s）
+> - **人机协作体验**（新增第 4 步"人类保留最终权力"一拍，把"否决=人在回路里"讲成协作而非旁观）
+> - **模块化**（每镜头一段短视频，可单独返录、跳剪）
+> - **必须有音频**（口播报 VO，绝不止 BGM）
 
 ---
 
-## 1. 镜头总览（先看这页，再往下逐段录）
+## 0. 录制前 5 分钟
+
+1. 浏览器窗口锁到 1280–1440 宽、无滚动条，打开 `/`。
+2. **任务文本已粘贴进输入框**（只贴不敲，避免实时打字）：
+   `Validate the low-volatility ETF rotation strategy. Anything that passes without REAL market data should be blocked.`
+3. 第二标签已打开 `[你的URL]/webmcp.json`；剪贴板放 `/api/goai/audit-demo`。
+4. VO 打印放一旁，对着念，念错就返录该镜头。
+
+---
+
+## 1. 镜头总览（15s 钩子结构）
 
 | # | 时长 | 画面 | 口播要点 | 切点 |
 |---|---|---|---|---|
-| S1 | 0–8s | `/` 首屏 Hero | "不是给人类看的UI，是给Agent的真相" | Hero 出现后停 1s |
-| S2 | 8–20s | 输入框 + 点 Run + 转菊花 | 人和 Agent 一起验证策略 | 结果刷出前切 |
-| S3 | 20–38s | **裁决卡 + 6步trace**（slowmo 到第5步） | 数字很漂亮，闸门仍 BLOCKED | "BLOCKED"定格 2s |
-| S4 | 38–55s | 切到 `/webmcp.json` policy + agent_safety | 工具契约 / PLAN_ONLY / 绕不过 | 滚动到 policy 段停下 |
-| S5 | 55–90s | 回到 `/` 收尾 + 卡片 | 任何管钱的 Agent 都该先过这道闸 | 收尾淡出 |
+| S1 | 0–6s | `/` 首屏 Hero | "不是给你看的UI，是给Agent的真相" | 停 0.5s |
+| S2 | 6–14s | **点 Run → 结果即刷出 BLOCKED** | 一次调用、一个否决，12 秒见真章 | BLOCKED 定格 1.5s |
+| S3 | 14–28s | **裁决卡 + 6步trace**（slowmo 第5步） | 数字漂亮，闸门照样 BLOCKED；第6步 SKIPPED | 第5步红框停 2s |
+| S4 | 28–44s | 回到 trace 末尾 **approval gate** | "人在回路里，最终权力在人"（人机协作） | 高亮审阅框 |
+| S5 | 44–60s | 切 `/webmcp.json` policy + agent_safety | 工具契约 / PLAN_ONLY / 绕不过 | 滚到 policy 停下 |
+| S6 | 60–75s | 回到 `/` 收尾 | 任何管钱的 Agent 都先过这道闸 | 淡出 |
 
 ---
 
-## 2. 逐镜头脚本（照此录）
+## 2. 逐镜头脚本（照此录，每镜头单独成一段短视频）
 
-### S1 — 首屏反转陈述（0–8s）
-**画面**：`/` 首屏完整露出，端庄克制的排版、盾牌 logo、`// agent-safe. no auto-execution. auditable.`。
-**手感**：无需点击。录 5–6 秒静止，给画面呼吸感。
-**VO（英文，5–6 词/秒）**：
-> "Most AI investing demos are screens to impress a human eye. This one deliberately isn't."
-> （这里停半拍）"AlphaGuard is the *machine-facing* layer — a tool contract an agent calls, not a dashboard to ooh over. It says *less*, on purpose: because the agent needs the truth, not the pretty."
-
-**叙事落点**：把"不炫"说成"不给你看的UI"——第一句就破题。
-
-### S2 — 人与 Agent 一起发问（8–20s）
-**画面**：光标进入 task 输入框 → 粘贴任务文本 → 点击 primary 按钮 `Run a real audit` → 出现加载态。
-**手感**：粘贴后让文本可见 1 秒再点；点完立即把画面留给转菊花（别动鼠标）。
+### S1 — 首屏反转（0–6s）
+**画面**：`/` 完整露出，盾牌 logo、`// agent-safe. no auto-execution. auditable.`。
 **VO**：
-> "A person and their agent ask the same question: 'Can we move this low-vol rotation strategy to paper trading?' The agent answers by *calling real tools* — not by clicking around a website."
+> "Most AI investing demos are a screen to impress a human. This one deliberately isn't — it's the machine-facing contract an agent calls."
 
-### S3 — 裁决时刻（核心镜头，20–38s）
-**画面**：结果卡刷出，红色 `BLOCKED` 徽标 + 徽标旁盾牌叉；下面 6 步 trace 逐行落下。
-**关键手法**：**第 5 步 `apply_risk_gate → BLOCKED` 序号框是红色**，比其余步骤扎眼——鼠标指针轻轻停在它上面 1–2 秒，别点。
-**VO**（读到这里放慢、加重）：
-> "The metrics look great — any human sales pitch would win on this number. But the deterministic gate still returns *BLOCKED*."
-> （指着第 5 步，停顿）"Watch step five: `apply_risk_gate` fires its veto. And the next step, `create_order_intent`, is **SKIPPED** — not approved, skipped."
-
-**叙事落点**：把"哪个数字漂亮"和"哪一步被拦"并列，制造反差点。这是全片记忆点。
-
-### S4 — 切证明：工具契约（38–55s）
-**画面**：切到 `/webmcp.json`，滚到 `policy` 和某个工具的 `agent_safety` 块（`PLAN_ONLY` / `deterministic_veto` / `order_creation: NEVER`）。
-**手感**：从顶部 `"tools": [` 慢慢往下滚，到 `policy` 段速度变缓，指尖停 1s。
+### S2 — 15 秒见真章（6–14s）
+**画面**：直接点 primary 按钮 `Run a real audit`（任务已贴好，不敲键盘）→ 转菊花 ≤1s → 结果卡刷出，红色 `BLOCKED` 徽标。
 **VO**：
-> "Here's the part a human UI would hide. Each tool carries its safety contract: authority is `PLAN_ONLY`, orders are `NEVER`. The LLM can *plan* — it can never *override*. That's why `BLOCKED` is final."
+> "A person and their agent ask the same question. The agent answers by calling real tools — one call — and the deterministic gate says no."
 
-### S5 — 谁该用它（55–90s）
-**画面**：回到 `/` 首屏，画面整体淡出或在下方露出产品名。
-**手感**：静止 4–5 秒收尾，配结束卡。
+**验收点**：这一段落在全片前 15 秒内，满足"15 秒内展示在运行"。
+
+### S3 — 裁决时刻（14–28s）
+**画面**：6 步 trace 逐行落下，第 5 步 `apply_risk_gate → BLOCKED` 序号框红色，第 6 步 `create_order_intent → SKIPPED` 琥珀色。指针轻停第 5 步 2s。
+**VO**（放慢、加重）：
+> "The metrics look great — any sales pitch would win on that number. But step five fires its veto, and the order intent is **SKIPPED**, not approved. Nothing is auto-executed."
+
+### S4 — 人在回路里（28–44s）★人机协作补强
+**画面**：滚动/提示 trace 区下方或右侧"Approval"区：显示"final authority holds with the human"、order_intent 旁标 `awaiting human approval`。
 **VO**：
-> "Any agent that touches money should be forced to call auditable research and risk tools *first*. AlphaGuard is that gate — plan freely, execute only with proof. Try it live; feed it a beautiful backtest and watch it say no." →（淡出）"AlphaGuard. The refusal is the feature."
+> "Here's the collaboration. The agent plans, the gate vetoes, and the *human* keeps final authority. That's the whole design between the two of them — an agent that proposes, a person who disposes."
 
-**结束卡文字**：`AlphaGuard — the refusal is the feature. [repo] · [live]`
+**叙事落点**：把"否决"包装成**人机共治**，正面回应"human-agent experience"评分项。
 
----
+### S5 — 切证明：工具契约（44–60s）
+**画面**：切 `/webmcp.json`，慢滚到 `policy` + 某工具 `agent_safety`（`PLAN_ONLY` / `deterministic_veto` / `order_creation: NEVER`）。
+**VO**：
+> "Here's the part a human UI would hide. Every tool carries its safety contract: authority `PLAN_ONLY`, orders `NEVER`. The LLM can plan — it can never override. That's why `BLOCKED` is final."
 
-## 3. 一条过录制小抄（不想剪就照这个顺序一口气录）
+### S6 — 谁该用它（60–75s）
+**画面**：回 `/` 首屏，静止收尾，露出产品名。
+**VO**：
+> "Any agent that touches money should be forced to call auditable research and risk tools first. AlphaGuard is that gate — plan freely, execute only with proof. Feed it a beautiful backtest and watch it say no."
+> （停）"AlphaGuard. The refusal is the feature."
 
-> 优点：零剪辑复杂度；缺点：VO 得一次念顺。适用于「求快省事」。
-
-准备：任务文本已粘贴未运行 + 浏览器已开两个标签（`/` 与 `/webmcp.json`）。
-
-1. 对着 `/` 首屏念 S1 VO（5–6s）。
-2. 点 Run，念 S2 VO，等结果刷出（8–20s 段）。
-3. 结果出来后念 S3 VO，一句对一屏，放慢到第 5 步。
-4. 念到哪句"这里有个部分人类UI会藏起来"时，切标签到 `/webmcp.json`，补 S4 VO。
-5. 记录到结束语，`Alt+Tab` 切回 `/` 对着首屏念 S5 结尾，收。
-
----
-
-## 4. 剪辑清单（可选，做了更加分）
-
-- [ ] 关键帧：`BLOCKED` 徽标出现那 1–2 帧稍微停留或轻缩放（150–200ms）。
-- [ ] S3 第 5 步 BLOCKED + 第 6 步 SKIPPED，各加一个短暂高亮框。
-- [ ] 全程去掉鼠标抖动；指针只在需要指的时候动。
-- [ ] 字幕加在底部（口播与字幕同步）。
-- [ ] 导出 1080p / 30fps，文件名 `alpha-guard-demo.mp4`。
+**结束卡**：`AlphaGuard — the refusal is the feature. [repo] · [live]`
 
 ---
 
-## 5. 叙事一句话（任何地方都能复用）
+## 3. 模块化录制清单（每镜头 = 一个短片，便于返录/跳剪）
 
-> **"It's not a pretty screen for a human — it's a truth-server for an agent. The design is restraint on purpose: an agent reading `PLAN_ONLY` should *feel* how little power it has, and a human reading `BLOCKED` should trust it."**
+- [ ] 分别录 S1..S6 六段（每段 8–16s），各自可重录，不必一次念全。
+- [ ] S2 单独确认"15 秒内出 BLOCKED"；若加载超 2s，剪掉转菊花（跳剪）。
+- [ ] 全程零打字（只有粘贴好的文本 + 点击）。
+- [ ] 加底部字幕（口播同步）。
+- [ ] 导出 1080p / 30fps，`alpha-guard-demo.mp4`，总长 ≤90s。
 
-把这一句放进：demo 开场、Devpost 描述里"The idea"段首、pitch 的电梯间 30 秒版。
+---
+
+## 4. 叙事一句话
+
+> **"It's not a pretty screen for a human — it's a truth-server for an agent. The restraint is the design: an agent reading `PLAN_ONLY` feels how little power it has, a human reading `BLOCKED` keeps final authority."**
+
+放进：demo 开场、Devpost "The idea"段首、30 秒 pitch。
