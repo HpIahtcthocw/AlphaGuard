@@ -1,5 +1,5 @@
 {
-  "name": "AlphaGuard",
+  "name": "Firebreak",
   "version": "0.7.0",
   "description": "A research agent that stops you from being fooled by a beautiful backtest. It exposes deterministic, auditable investment-research and risk-gate actions to AI agents via the Model Context Protocol (WebMCP).",
   "agent_discovery": ["./llms.txt", "../"],
@@ -7,7 +7,7 @@
   "policy": {
     "title": "No auto-execution. Agents plan, deterministic rules veto, humans approve.",
     "llm_authority": "PLAN_ONLY — the LLM may plan the research sequence but cannot modify risk rules, cannot override a gate, and cannot create an order intent.",
-    "human_oversight": "AlphaGuard never places orders automatically. Paper-only by default; external brokers are disabled. Any would-be execution requires explicit human approval that lives outside the agent's reach.",
+    "human_oversight": "Firebreak never places orders automatically. Paper-only by default; external brokers are disabled. Any would-be execution requires explicit human approval that lives outside the agent's reach.",
     "evidence_before_action": "Every tool output carries structured evidence and a data fingerprint; nothing is asserted without it.",
     "not_investment_advice": "Research/procedural demo only. Makes no return promises and does not represent real returns."
   },

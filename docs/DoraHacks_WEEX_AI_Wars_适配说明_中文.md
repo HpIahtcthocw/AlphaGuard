@@ -12,7 +12,7 @@ DoraHacks 首页当前展示 `WEEX AI Wars II` 活动入口，地址为：
 
 ## 推荐参赛项目
 
-使用本目录的 **AlphaGuard（个人投资研究与风险守门 Agent）**，不另起项目。
+使用本目录的 **Firebreak（个人投资研究与风险守门 Agent）**，不另起项目。
 
 匹配理由：
 

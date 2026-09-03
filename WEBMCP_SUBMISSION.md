@@ -1,17 +1,17 @@
-# AlphaGuard — WebMCP Challenge Submission
+# Firebreak — WebMCP Challenge Submission
 
-**Project title:** AlphaGuard — an investment researcher whose job is to stop you from admiring a beautiful backtest.
+**Project title:** Firebreak — an investment researcher whose job is to stop you from admiring a beautiful backtest.
 
 **One-line pitch (use as the Devpost subtitle):**
-> A person and their AI agent validate an investment strategy together — but the agent can't bend the rules. AlphaGuard exposes real, deterministic risk-gate actions to agents, and a `BLOCKED` verdict is final.
+> A person and their AI agent validate an investment strategy together — but the agent can't bend the rules. Firebreak exposes real, deterministic risk-gate actions to agents, and a `BLOCKED` verdict is final.
 
 ## What it is
 
-AlphaGuard is the agent-facing surface of the **Personal Investment OS** — a local-first, auditable investment research and paper-trading system. Instead of leaving an AI agent to guess its way through the UI, the web app exposes five structured, real actions (declared in `/webmcp.json` and discoverable from `/llms.txt`). The flagship action is a **guarded audit**: an LLM (Qwen) plans the research sequence, but deterministic data-provenance, data-quality, walk-forward and production gates hold **final veto authority**. Even when the backtest looks great, unproven (synthetic) data makes the gate return `BLOCKED`, and no order intent is ever created. The LLM can plan — it can never override.
+Firebreak is the agent-facing surface of the **Personal Investment OS** — a local-first, auditable investment research and paper-trading system. Instead of leaving an AI agent to guess its way through the UI, the web app exposes five structured, real actions (declared in `/webmcp.json` and discoverable from `/llms.txt`). The flagship action is a **guarded audit**: an LLM (Qwen) plans the research sequence, but deterministic data-provenance, data-quality, walk-forward and production gates hold **final veto authority**. Even when the backtest looks great, unproven (synthetic) data makes the gate return `BLOCKED`, and no order intent is ever created. The LLM can plan — it can never override.
 
 ## How it fits the WebMCP thesis
 
-WebMCP lets a website hand an agent *real, structured, callable* tools instead of making it click. AlphaGuard is a pure demonstration of that:
+WebMCP lets a website hand an agent *real, structured, callable* tools instead of making it click. Firebreak is a pure demonstration of that:
 
 - `/llms.txt` — what the site does, for agent discovery.
 - `/webmcp.json` — a typed contract listing each tool's method, path, input/output schema and **agent-safety metadata** (`PLAN_ONLY`, `deterministic_veto`, `order_creation: NEVER`).
@@ -65,7 +65,7 @@ These are the steps to put it live. You need a Render account, a Git remote, and
 
 ## Demo video script (60–90s)
 
-1. **Hook (0–10s):** "This is AlphaGuard — a research agent that refuses to be impressed by a beautiful backtest."
+1. **Hook (0–10s):** "This is Firebreak — a research agent that refuses to be impressed by a beautiful backtest."
 2. **The ask (10–25s):** Type the strategy-validation task on `/`. Person + agent want to move a low-vol ETF rotation strategy to paper trading.
 3. **The agent works (25–45s):** Show the 6-step trace — planner → inspect_dataset → run_backtest → audit_backtest → **apply_risk_gate: BLOCKED** → create_order_intent: SKIPPED. Emphasize the verdict badge.
 4. **Why it matters (45–70s):** "The data is synthetic, so the gate says no — no ifs, no LLM override. The agent plans, but only deterministic rules decide." Cut to `/webmcp.json` showing a tool's `agent_safety` block.

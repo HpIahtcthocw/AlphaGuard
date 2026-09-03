@@ -1,4 +1,4 @@
-"""AlphaGuard Security Benchmark — published, machine-verifiable risk scenarios.
+"""Firebreak Security Benchmark — published, machine-verifiable risk scenarios.
 
 Each scenario describes an *attempt to get a bad strategy past the gate*. The
 benchmark asserts the deterministic veto MUST block every one of them. If a

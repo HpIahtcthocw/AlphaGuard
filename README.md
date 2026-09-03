@@ -1,10 +1,10 @@
 # Personal Investment OS
 
-## AlphaGuard — WebMCP Challenge submission (English)
+## Firebreak — WebMCP Challenge submission (English)
 
 > **An investment researcher whose job is to stop you from admiring a beautiful backtest.** A person and their AI agent validate a strategy together — but the agent can't bend the rules.
 
-AlphaGuard is the agent-facing surface of the Personal Investment OS. It exposes **real, deterministic, auditable actions** (not a chatbot) that AI agents call directly, declared in [`webmcp.json`](./webmcp.json) and discoverable from [`llms.txt`](./llms.txt). The flagship action is a **guarded audit**: the LLM plans the research sequence, but deterministic data-provenance, data-quality, walk-forward and production gates hold **final veto authority**. Even when the demo backtest looks great (synthetic data is explicitly marked), the gate returns `BLOCKED` and no order intent is ever created. The LLM can plan — it never overrides.
+Firebreak is the agent-facing surface of the Personal Investment OS. It exposes **real, deterministic, auditable actions** (not a chatbot) that AI agents call directly, declared in [`webmcp.json`](./webmcp.json) and discoverable from [`llms.txt`](./llms.txt). The flagship action is a **guarded audit**: the LLM plans the research sequence, but deterministic data-provenance, data-quality, walk-forward and production gates hold **final veto authority**. Even when the demo backtest looks great (synthetic data is explicitly marked), the gate returns `BLOCKED` and no order intent is ever created. The LLM can plan — it never overrides.
 
 - Tools: `audit_strategy`, `run_demo_backtest`, `validate_dataset`, `market_rules`, `run_experiment`
 - Safety: `PLAN_ONLY` authority, deterministic veto, human approval for execution, brokers disabled by default
@@ -13,11 +13,11 @@ AlphaGuard is the agent-facing surface of the Personal Investment OS. It exposes
 
 Reality check: not investment advice, makes no return promises, and represents real returns nowhere.
 
-## GOAI 参赛切口：AlphaGuard
+## GOAI 参赛切口：Firebreak
 
 **一句话：一个不负责荐股、专门阻止你被漂亮回测骗到的个人投资研究 Agent。**
 
-默认首屏是 AlphaGuard 的黄金演示：用户要求验证一条低波动 ETF 轮动策略，Agent 调用数据检查、真实回测、样本外审计和风险门禁工具。当前演示使用明确标记的 `SYNTHETIC_DEMO` 数据，因此即使回测结果看起来不错，确定性门禁仍会返回 `BLOCKED`，并且不会创建订单意图。
+默认首屏是 Firebreak 的黄金演示：用户要求验证一条低波动 ETF 轮动策略，Agent 调用数据检查、真实回测、样本外审计和风险门禁工具。当前演示使用明确标记的 `SYNTHETIC_DEMO` 数据，因此即使回测结果看起来不错，确定性门禁仍会返回 `BLOCKED`，并且不会创建订单意图。
 
 Qwen 只拥有任务理解和工具规划权，不能改写风险规则。配置 `DASHSCOPE_API_KEY` 后使用 DashScope OpenAI 兼容接口；未配置时界面会明确显示“规则规划器演示（未调用 Qwen）”。完整参赛说明见 [GOAI 提交包](./docs/GOAI_SUBMISSION.md)。
 

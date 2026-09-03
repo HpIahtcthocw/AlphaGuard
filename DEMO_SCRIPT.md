@@ -1,4 +1,4 @@
-# AlphaGuard — WebMCP-Compliant Demo Script (≤90s, 单人可录)
+# Firebreak — WebMCP-Compliant Demo Script (≤90s, 单人可录)
 
 > 本版按 WebMCP Challenge 官方验收逐条约束改写：
 > - **15 秒内展示项目在运行**（S1→S2 压缩，BLOCKED 结果在 ~12s 落地）
@@ -67,10 +67,10 @@
 ### S6 — 谁该用它（60–75s）
 **画面**：回 `/` 首屏，静止收尾，露出产品名。
 **VO**：
-> "Any agent that touches money should be forced to call auditable research and risk tools first. AlphaGuard is that gate — plan freely, execute only with proof. Feed it a beautiful backtest and watch it say no."
-> （停）"AlphaGuard. The refusal is the feature."
+> "Any agent that touches money should be forced to call auditable research and risk tools first. Firebreak is that gate — plan freely, execute only with proof. Feed it a beautiful backtest and watch it say no."
+> （停）"Firebreak. The refusal is the feature."
 
-**结束卡**：`AlphaGuard — the refusal is the feature. [repo] · [live]`
+**结束卡**：`Firebreak — the refusal is the feature. [repo] · [live]`
 
 ---
 

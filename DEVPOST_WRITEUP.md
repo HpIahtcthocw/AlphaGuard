@@ -6,15 +6,15 @@
 
 ## Title (use the format: name — the hook)
 
-**AlphaGuard — an investment researcher whose job is to stop you from admiring a beautiful backtest**
+**Firebreak — an investment researcher whose job is to stop you from admiring a beautiful backtest**
 
 ## Subtitle / tagline
 
-> It's not a pretty screen for a human — it's a truth-server for an agent. Under WebMCP, AlphaGuard hands agents real, deterministic risk-gate tools: the agent calls, the gate vetoes, and a `BLOCKED` verdict is final.
+> It's not a pretty screen for a human — it's a truth-server for an agent. Under WebMCP, Firebreak hands agents real, deterministic risk-gate tools: the agent calls, the gate vetoes, and a `BLOCKED` verdict is final.
 
 ## Short description (first paragraph — start with the hook, not "this is a project")
 
-The WebMCP promise is that a website hands an agent *real, actionable* tools instead of a chat box. AlphaGuard delivers on that promise in the domain where honesty matters most: money. It exposes five typed, callable actions (`llms.txt` → `webmcp.json` → the endpoints) so an agent can actually research an investment-strategy question. But here's the twist — the agent that calls AlphaGuard **can't cheat**. An LLM plans the research, but deterministic data-provenance, data-quality, walk-forward and production gates hold **final veto authority**. Feed it any strategy, and the pretty backtest still comes back `BLOCKED` the moment the data is unproven — no order intent is ever created, and the LLM has no power to override. It's anti-hype hardware for trustworthy human-agent finance.
+The WebMCP promise is that a website hands an agent *real, actionable* tools instead of a chat box. Firebreak delivers on that promise in the domain where honesty matters most: money. It exposes five typed, callable actions (`llms.txt` → `webmcp.json` → the endpoints) so an agent can actually research an investment-strategy question. But here's the twist — the agent that calls Firebreak **can't cheat**. An LLM plans the research, but deterministic data-provenance, data-quality, walk-forward and production gates hold **final veto authority**. Feed it any strategy, and the pretty backtest still comes back `BLOCKED` the moment the data is unproven — no order intent is ever created, and the LLM has no power to override. It's anti-hype hardware for trustworthy human-agent finance.
 
 ## Full description
 
@@ -22,7 +22,7 @@ The WebMCP promise is that a website hands an agent *real, actionable* tools ins
 Most "AI investing" is either a dashboard of net-worth charts or a demo that sells you on a beautiful backtest. Both are a trap: a backtest that looks great can absolutely be built on data and assumptions that shouldn't touch real money. And when an autonomous agent acts on that, the failure scales.
 
 ### The idea
-Don't read our sparse design as unfinished — it's load-bearing. The page isn't a dashboard to impress a human; it's a contract the agent reads. AlphaGuard is the agent-facing surface of the **Personal Investment OS**. Instead of letting an agent guess its way through a UI, the site exposes real actions that agents call directly:
+Don't read our sparse design as unfinished — it's load-bearing. The page isn't a dashboard to impress a human; it's a contract the agent reads. Firebreak is the agent-facing surface of the **Personal Investment OS**. Instead of letting an agent guess its way through a UI, the site exposes real actions that agents call directly:
 
 | Tool | Endpoint | What it does |
 |---|---|---|

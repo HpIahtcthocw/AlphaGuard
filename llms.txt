@@ -1,10 +1,10 @@
-# AlphaGuard
+# Firebreak
 
 > A research agent whose job is to stop you from being fooled by a beautiful backtest. A person and their AI agent validate an investment strategy together, but the web app exposes real, deterministic, auditable actions (not a chatbot) that the agent calls directly.
 
 ## Details
 
-AlphaGuard is the agent-facing surface of the Personal Investment OS. Instead of making an agent guess its way through a UI, the site exposes structured, callable actions — validated with typed JSON contracts in `/webmcp.json`. The agent discovers the site here, reads that manifest, then calls the endpoints.
+Firebreak is the agent-facing surface of the Personal Investment OS. Instead of making an agent guess its way through a UI, the site exposes structured, callable actions — validated with typed JSON contracts in `/webmcp.json`. The agent discovers the site here, reads that manifest, then calls the endpoints.
 
 The flagship action is a **guarded audit**: given a strategy proposal in natural language, an LLM (Qwen via DashScope) plans the research tool sequence, but a **deterministic production gate holds final veto authority**. Even when a backtest looks great, synthetic/unproven data causes the gate to return `BLOCKED`, and no order intent is ever created. The LLM can plan, never override.
 
@@ -27,7 +27,7 @@ Typed input/output schemas for every action are in `/webmcp.json`.
 
 ## Workflow an agent should follow
 
-1. Read this `llms.txt` to understand what AlphaGuard does.
+1. Read this `llms.txt` to understand what Firebreak does.
 2. Read `/webmcp.json` for the typed tool contract.
 3. Call `audit_strategy` with the user's validation task to get a guarded verdict + trace.
 4. If a backtest/metric is shown, cross-check with `validate_dataset` and `market_rules`.

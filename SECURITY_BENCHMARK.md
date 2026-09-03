@@ -1,6 +1,6 @@
-# AlphaGuard Security Benchmarks
+# Firebreak Security Benchmarks
 
-Two machine-verifiable suites that turn AlphaGuard's core promise — *"the
+Two machine-verifiable suites that turn Firebreak's core promise — *"the
 deterministic veto can never be bypassed"* — from a claim into a testable
 fact. Any submission for review (demo, agent, PR) is measured against these.
 
