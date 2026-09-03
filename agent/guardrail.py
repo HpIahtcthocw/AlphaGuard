@@ -54,8 +54,19 @@ class GuardrailAgent:
         if not self.api_key.strip():
             return self._rule_fallback("未配置 DASHSCOPE_API_KEY；本次未调用 Qwen。")
 
+        candidates = [self.model] + [m for m in ("qwen-turbo", "qwen-max") if m != self.model]
+        for model in candidates:
+            planned = self._plan_once(model, task)
+            if planned is not None:
+                return planned
+        return self._rule_fallback(
+            "所有 Qwen 模型均不可用，已降级为确定性规则规划器；审计仍可继续。",
+            configured=True,
+        )
+
+    def _plan_once(self, model: str, task: str) -> Optional[PlannerResult]:
         payload = {
-            "model": self.model,
+            "model": model,
             "temperature": 0,
             "response_format": {"type": "json_object"},
             "messages": [
@@ -86,14 +97,14 @@ class GuardrailAgent:
             tools = self._normalize_tools(planned.get("tools", []))
             return PlannerResult(
                 mode="QWEN",
-                model=self.model,
-                label=f"Qwen 规划器 · {self.model}",
+                model=model,
+                label=f"Qwen 规划器 · {model}",
                 tools=tools,
                 api_key_configured=True,
                 note=str(planned.get("note") or "Qwen 已生成受控工具计划。"),
             )
         except (KeyError, TypeError, ValueError, json.JSONDecodeError, urllib.error.URLError, TimeoutError):
-            return self._rule_fallback("Qwen 规划失败，已降级为确定性规则规划器；审计仍可继续。", configured=True)
+            return None
 
     @staticmethod
     def _normalize_tools(value: object) -> list[str]:
