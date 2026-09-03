@@ -50,3 +50,16 @@ def test_live_broker_is_locked_without_environment_unlock(monkeypatch):
     service = ExecutionService("alpaca-live", broker)
     with pytest.raises(ValueError, match="kill switch"):
         service.submit(approved_intent(), "SUBMIT intent-1", Decimal("225"))
+
+
+def test_broker_status_sync_does_not_invent_fill():
+    def transport(method, url, headers, body, timeout):
+        assert method == "GET"
+        assert url.endswith("/v2/orders/alpaca-123")
+        return {"id": "alpaca-123", "status": "partially_filled", "filled_qty": "1", "filled_avg_price": "225.10"}
+
+    broker = AlpacaTradingBroker("paper", "key", "secret", transport=transport)
+    result = ExecutionService("alpaca-paper", broker).sync_order("alpaca-123")
+    assert result["status"] == "PARTIALLY_FILLED"
+    assert result["filled_qty"] == "1"
+    assert result["filled_avg_price"] == "225.10"

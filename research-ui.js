@@ -51,11 +51,11 @@
     const original = buttonElement.textContent;
     buttonElement.textContent = '运行中…';
     try {
-      const response = await fetch('/api/research/demo-backtest');
+      const response = await fetch('/api/research/experiments/personal');
       const report = await response.json();
       if (!response.ok) throw new Error(report.detail || '回测失败');
       render(report);
-      window.pioShowToast?.('合成回测完成：请先查看样本外和基线结果。');
+      window.pioShowToast?.('PIO-EXP-001 完成：请先查看样本外、基线和门禁结果。');
     } catch (error) {
       window.pioShowToast?.(error.message || '回测失败');
     } finally {

@@ -33,6 +33,8 @@ def run_research_backtest(
         raise ValueError("; ".join(quality["errors"]))
     clean = prices.astype(float).sort_index()
     strategy = get_strategy(strategy_id)
+    if strategy.mode != "portfolio" or strategy.generator is None:
+        raise ValueError(f"strategy {strategy_id} is signal-only and cannot be used by the portfolio backtest endpoint")
     weights = strategy.generator(clean, **dict(parameters or {}))
     benchmark = clean[benchmark_symbol] if benchmark_symbol else None
     result = run_backtest(clean, weights, config, benchmark)

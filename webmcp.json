@@ -1,0 +1,100 @@
+{
+  "name": "AlphaGuard",
+  "version": "0.7.0",
+  "description": "A research agent that stops you from being fooled by a beautiful backtest. It exposes deterministic, auditable investment-research and risk-gate actions to AI agents via the Model Context Protocol (WebMCP).",
+  "agent_discovery": ["./llms.txt", "../"],
+  "base_url": "https://REPLACE_WITH_DEPLOYED_URL",
+  "policy": {
+    "title": "No auto-execution. Agents plan, deterministic rules veto, humans approve.",
+    "llm_authority": "PLAN_ONLY — the LLM may plan the research sequence but cannot modify risk rules, cannot override a gate, and cannot create an order intent.",
+    "human_oversight": "AlphaGuard never places orders automatically. Paper-only by default; external brokers are disabled. Any would-be execution requires explicit human approval that lives outside the agent's reach.",
+    "evidence_before_action": "Every tool output carries structured evidence and a data fingerprint; nothing is asserted without it.",
+    "not_investment_advice": "Research/procedural demo only. Makes no return promises and does not represent real returns."
+  },
+  "tools": [
+    {
+      "name": "audit_strategy",
+      "method": "POST",
+      "path": "/api/goai/audit-demo",
+      "summary": "Run the full guarded audit of a strategy proposal.",
+      "description": "Takes a research task in natural language, plans the tool sequence with the LLM, runs a deterministic backtest on marked synthetic data, then applies data-provenance, data-quality, walk-forward and production-readiness gates. Returns a verdict and a full auditable tool trace. The LLM has planning authority only and can never override a gate or create an order intent.",
+      "agent_safety": {
+        "authority": "PLAN_ONLY",
+        "deterministic_veto": true,
+        "order_creation": "NEVER"
+      },
+      "input": {
+        "type": "object",
+        "required": ["task"],
+        "properties": {
+          "task": {
+            "type": "string",
+            "description": "The research/validation task, described in natural language (min 8 chars, max 500).",
+            "minLength": 8,
+            "maxLength": 500
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "description": "Structured verdict (ELIGIBLE|BLOCKED), headline, summary, planner metadata, and an ordered trace of the executed tools with evidence.",
+        "key_fields": ["run_id", "verdict", "headline", "trace", "evidence"]
+      },
+      "idempotent": true
+    },
+    {
+      "name": "run_demo_backtest",
+      "method": "GET",
+      "path": "/api/research/demo-backtest",
+      "summary": "Run a reproducible backtest on marked synthetic data.",
+      "description": "Returns a deterministic, reproducible backtest with baselines and out-of-sample metrics. The dataset is explicitly marked SYNTHETIC_DEMO and is not production evidence.",
+      "agent_safety": { "authority": "READ_ONLY", "order_creation": "NEVER" },
+      "input": null,
+      "output": { "type": "object", "description": "Full backtest result including metrics, out-of-sample metrics, baselines and dataset provenance.", "key_fields": ["metrics", "out_of_sample_metrics", "baselines", "dataset_kind"] }
+    },
+    {
+      "name": "validate_dataset",
+      "method": "POST",
+      "path": "/api/research/datasets/ohlcv/validate",
+      "summary": "Validate an OHLCV CSV against a dataset contract.",
+      "description": "Validates OHLCV CSV text against required columns and data-quality rules, returning errors, warnings and a unique data fingerprint. Use before trusting any market data.",
+      "agent_safety": { "authority": "READ_ONLY", "order_creation": "NEVER" },
+      "input": {
+        "type": "object",
+        "required": ["csv_text"],
+        "properties": {
+          "csv_text": { "type": "string", "description": "Raw OHLCV CSV content.", "minLength": 1, "maxLength": 5000000 },
+          "dataset_kind": { "type": "string", "enum": ["REAL_MARKET_DATA", "SYNTHETIC_DEMO", "DELAYED_MARKET_DATA", "SNAPSHOT_MARKET_DATA"], "default": "REAL_MARKET_DATA" }
+        }
+      },
+      "output": { "type": "object", "description": "Validation report with errors, warnings and data fingerprint.", "key_fields": ["errors", "warnings", "data_fingerprint"] }
+    },
+    {
+      "name": "market_rules",
+      "method": "GET",
+      "path": "/api/research/market-rules",
+      "summary": "Read US / CN market trading rules.",
+      "description": "Returns trading-unit, short-selling and price-limit rules for US or CN markets. Look these up before proposing an order quantity or side.",
+      "agent_safety": { "authority": "READ_ONLY", "order_creation": "NEVER" },
+      "input": {},
+      "output": { "type": "object", "description": "Market rule descriptions keyed by market.", "key_fields": ["rules"] }
+    },
+    {
+      "name": "run_experiment",
+      "method": "POST",
+      "path": "/api/research/experiments/personal/run",
+      "summary": "Validate a user CSV and replay the fixed, research-only experiment protocol.",
+      "description": "Validates a user-provided OHLCV CSV then replays the fixed experiment protocol with the same guardrails. Never creates an order intent.",
+      "agent_safety": { "authority": "READ_ONLY", "order_creation": "NEVER" },
+      "input": {
+        "type": "object",
+        "required": ["csv_text"],
+        "properties": {
+          "csv_text": { "type": "string", "description": "Raw OHLCV CSV content.", "minLength": 1, "maxLength": 5000000 },
+          "benchmark_symbol": { "type": "string" }
+        }
+      },
+      "output": { "type": "object", "description": "Experiment replay result with evidence and guardrails.", "key_fields": ["verdict", "metrics", "evidence"] }
+    }
+  ]
+}

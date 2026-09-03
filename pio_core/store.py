@@ -247,6 +247,25 @@ class PioStore:
             self._audit(connection, "BROKER_ORDER_SUBMITTED", "broker_order", broker_order_id, {"intent_id": intent_id, "broker": broker, "environment": environment, "external_order_id": external_order_id, "status": status})
             return dict(connection.execute("SELECT * FROM broker_orders WHERE id=?", (broker_order_id,)).fetchone())
 
+    def update_broker_order(self, intent_id: str, status: str, payload: Mapping[str, object]) -> Dict[str, object]:
+        """Persist broker status; fills remain separate until reconciled."""
+        now = _now()
+        with self._connect() as connection:
+            existing = connection.execute("SELECT * FROM broker_orders WHERE order_intent_id=?", (intent_id,)).fetchone()
+            if not existing:
+                raise ValueError("broker order not found")
+            connection.execute(
+                "UPDATE broker_orders SET status=?,payload_json=?,updated_at=? WHERE order_intent_id=?",
+                (status.upper(), _canonical(payload), now, intent_id),
+            )
+            # Keep the intent in SUBMITTED until a separate fill reconciler
+            # writes the accounting event. A broker's FILLED status alone is
+            # not sufficient to mutate cash/positions.
+            intent_status = status.upper() if status.upper() in {"CANCELLED", "REJECTED", "EXPIRED"} else "SUBMITTED"
+            connection.execute("UPDATE order_intents SET status=?,updated_at=? WHERE id=? AND status='SUBMITTED'", (intent_status, now, intent_id))
+            self._audit(connection, "BROKER_ORDER_STATUS_SYNCED", "broker_order", existing["id"], {"intent_id": intent_id, "status": status.upper()})
+            return dict(connection.execute("SELECT * FROM broker_orders WHERE order_intent_id=?", (intent_id,)).fetchone())
+
     def order_intent(self, intent_id: str) -> Dict[str, object]:
         with self._connect() as connection:
             row = connection.execute("SELECT * FROM order_intents WHERE id=?", (intent_id,)).fetchone()
@@ -265,6 +284,25 @@ class PioStore:
             events = [dict(row) for row in connection.execute("SELECT * FROM audit_log ORDER BY sequence DESC LIMIT ?", (limit,))]
             verified = self._verify_audit(connection)
         return {"verified": verified, "events": events}
+
+    def record_guardrail_decision(self, decision: Mapping[str, object]) -> str:
+        """Append a chained-hash decision record for a deterministic gate output."""
+        run_id = str(decision.get("run_id") or "UNKNOWN")
+        checks = decision.get("evidence", {}).get("risk_gate", {}).get("checks") if isinstance(
+            decision.get("evidence"), Mapping
+        ) else None
+        payload = {
+            "run_id": run_id,
+            "task": str(decision.get("task")),
+            "verdict": str(decision.get("verdict")),
+            "order_intent_created": bool(decision.get("order_intent_created")),
+            "planner_mode": str((decision.get("planner") or {}).get("mode")),
+            "gate_codes": [str(item.get("code")) for item in (checks or [])],
+            "gate_statuses": [str(item.get("status")) for item in (checks or [])],
+        }
+        with self._connect() as connection:
+            self._audit(connection, "GUARDRAIL_RUN", "guardrail_run", run_id, payload)
+        return run_id
 
     def _insert_positions(self, connection: sqlite3.Connection, snapshot_id: str, positions: Iterable[Mapping[str, object]]) -> None:
         connection.executemany(

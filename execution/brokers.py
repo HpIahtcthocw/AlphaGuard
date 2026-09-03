@@ -79,6 +79,31 @@ class AlpacaTradingBroker:
             "raw": response,
         }
 
+    def get_order(self, external_order_id: str) -> dict[str, object]:
+        """Fetch the broker's current order state without guessing a fill."""
+        if not self.configured:
+            raise RuntimeError("Alpaca trading is not configured")
+        response = self.transport(
+            "GET",
+            f"{self.base_url}/v2/orders/{external_order_id}",
+            {
+                "APCA-API-KEY-ID": self.api_key,
+                "APCA-API-SECRET-KEY": self.api_secret,
+                "Accept": "application/json",
+            },
+            {},
+            self.timeout,
+        )
+        if not response.get("id"):
+            raise RuntimeError("broker response did not contain an order id")
+        return {
+            "external_order_id": str(response["id"]),
+            "status": str(response.get("status") or "UNKNOWN").upper(),
+            "filled_qty": str(response.get("filled_qty") or "0"),
+            "filled_avg_price": response.get("filled_avg_price"),
+            "raw": response,
+        }
+
 
 def _default_transport(method: str, url: str, headers: Mapping[str, str], body: dict[str, object], timeout: float) -> dict[str, object]:
     request = Request(url, data=json.dumps(body).encode("utf-8"), method=method, headers=dict(headers))

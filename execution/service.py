@@ -62,6 +62,13 @@ class ExecutionService:
             raise ValueError(f"live quote deviates {deviation:.2%} from the approved reference price")
         return self.broker.submit_order(intent)
 
+    def sync_order(self, external_order_id: str) -> dict[str, object]:
+        if self.broker is None:
+            raise ValueError("external broker submission is disabled; use local paper simulation")
+        if not self.broker.configured:
+            raise ValueError("external broker credentials are not configured")
+        return self.broker.get_order(external_order_id)
+
     def _live_unlocked(self) -> bool:
         if not self.broker or not self.broker.is_live:
             return False

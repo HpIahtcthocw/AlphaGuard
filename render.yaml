@@ -1,0 +1,29 @@
+# Render blueprint for AlphaGuard (Personal Investment OS · WebMCP entry)
+#
+# Deploy steps:
+#   1. Push this repo to a Git remote.
+#   2. On Render: New -> Blueprint (or "Deploy from repository") and point at this repo.
+#   3. Render reads this file and creates the Web Service + environment.
+#   4. Set DASHSCOPE_API_KEY in the service environment (see App Service below).
+#   5. It boots on port $PORT (Render injects it) and is served at https://<your-app>.onrender.com
+#
+# The static site also provides:
+#   /                 -> English landing page with the live guarded-audit demo
+#   /webmcp.json      -> typed tool contract for AI agents
+#   /llms.txt         -> agent discovery file
+#   /api/*            -> the real actions agents call
+
+services:
+  - type: web
+    name: alphaguard
+    runtime: python
+    plan: starter
+    buildCommand: pip install .
+    startCommand: uvicorn server.app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: DASHSCOPE_API_KEY
+        sync: false                     # set this secret in the Render dashboard
+    healthCheckPath: /api/health
+    autoDeploy: true

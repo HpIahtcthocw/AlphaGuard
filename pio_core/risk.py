@@ -7,6 +7,8 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import Dict, Iterable, List, Mapping
 
+from execution.market_rules import get_market_rules
+
 
 @dataclass(frozen=True)
 class RiskCheck:
@@ -43,6 +45,17 @@ def evaluate_order(
 
     checks.append(_check("VALID_ORDER", quantity > 0 and reference_price > 0 and side in {"BUY", "SELL"}, "订单字段有效", "数量、价格或方向无效"))
     checks.append(_check("ALLOWED_MARKET", market in {"CN", "US", "HK"}, f"市场 {market} 已允许", f"市场 {market} 未列入允许范围"))
+    try:
+        market_rule = get_market_rules(market)
+    except ValueError:
+        market_rule = None
+    if market_rule is not None:
+        # Mainland markets require board lots when opening/increasing a
+        # position; selling an odd-lot remainder is permitted by many brokers.
+        lot_valid = quantity > 0 and (side != "BUY" or quantity % Decimal(str(market_rule.lot_size)) == 0)
+        checks.append(_check("LOT_SIZE", lot_valid, f"数量符合 {market_rule.market} {market_rule.lot_size} 股交易单位（卖出零股余数可例外）", f"买入数量必须是 {market_rule.market} {market_rule.lot_size} 股交易单位的整数倍"))
+        short_requested = side in {"SELL_SHORT", "SHORT"}
+        checks.append(_check("SHORT_PERMISSION", not short_requested or market_rule.supports_short, "做空权限由市场规则允许", f"{market_rule.market} 市场规则不允许该股票做空"))
 
     try:
         as_of = datetime.fromisoformat(snapshot_as_of.replace("Z", "+00:00")).date()

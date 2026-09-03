@@ -1,8 +1,13 @@
+# Python
 __pycache__/
-.pytest_cache/
 *.py[cod]
+.venv/
+.pytest_cache/
+.hypothesis/
+*.egg-info/
+.mypy_cache/
+.ruff_cache/
+
+# Env & local data
 .env
 data/*.db
-data/*.db-*
-coverage.xml
-.coverage

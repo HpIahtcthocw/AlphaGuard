@@ -1,0 +1,40 @@
+# AlphaGuard
+
+> A research agent whose job is to stop you from being fooled by a beautiful backtest. A person and their AI agent validate an investment strategy together, but the web app exposes real, deterministic, auditable actions (not a chatbot) that the agent calls directly.
+
+## Details
+
+AlphaGuard is the agent-facing surface of the Personal Investment OS. Instead of making an agent guess its way through a UI, the site exposes structured, callable actions — validated with typed JSON contracts in `/webmcp.json`. The agent discovers the site here, reads that manifest, then calls the endpoints.
+
+The flagship action is a **guarded audit**: given a strategy proposal in natural language, an LLM (Qwen via DashScope) plans the research tool sequence, but a **deterministic production gate holds final veto authority**. Even when a backtest looks great, synthetic/unproven data causes the gate to return `BLOCKED`, and no order intent is ever created. The LLM can plan, never override.
+
+- Language/runtime: Python 3.9+ / FastAPI / uvicorn
+- Deterministic demo data: `SYNTHETIC_DEMO` (explicitly not production evidence)
+- Order execution: paper-only, human approval required; external brokers disabled by default
+- Goal: real, reproducible, auditable investment research — not optimized returns, not investment advice
+
+## Agent actions (declared in /webmcp.json)
+
+These are the real actions an agent can call:
+
+- **audit_strategy** — `POST /api/goai/audit-demo` — Run the full guarded audit (plan with LLM → deterministic backtest → data-provenance / data-quality / walk-forward / production gates → verdict + auditable tool trace). The agent plans; only deterministic rules decide eligibility.
+- **run_demo_backtest** — `GET /api/research/demo-backtest` — Reproducible backtest on marked synthetic data with baselines and out-of-sample metrics.
+- **validate_dataset** — `POST /api/research/datasets/ohlcv/validate` — Validate an OHLCV CSV against a dataset contract; returns errors/warnings and a data fingerprint.
+- **market_rules** — `GET /api/research/market-rules` — Read US / CN trading-unit, short-selling and price-limit rules before proposing an order.
+- **run_experiment** — `POST /api/research/experiments/personal/run` — Validate a user CSV and replay the fixed research-only experiment protocol.
+
+Typed input/output schemas for every action are in `/webmcp.json`.
+
+## Workflow an agent should follow
+
+1. Read this `llms.txt` to understand what AlphaGuard does.
+2. Read `/webmcp.json` for the typed tool contract.
+3. Call `audit_strategy` with the user's validation task to get a guarded verdict + trace.
+4. If a backtest/metric is shown, cross-check with `validate_dataset` and `market_rules`.
+5. Respect the verdict: `BLOCKED` means the deterministic gates refused — do not attempt to create an order.
+
+## Constraints
+
+- This is research/demo tooling, not a recommendation engine and not investment advice.
+- No agent has execution authority; order intent creation is gated by deterministic rules and human approval.
+- The LLM has planning ability only and cannot modify risk rules.
