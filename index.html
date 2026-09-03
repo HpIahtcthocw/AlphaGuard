@@ -7,8 +7,76 @@
   <meta name="description" content="本地优先的个人投资研究与组合工作台" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 fill=%22%2317201f%22/><text x=%2232%22 y=%2239%22 text-anchor=%22middle%22 font-family=%22monospace%22 font-size=%2220%22 fill=%22white%22>PIO</text></svg>">
   <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./landing-panel.css" />
 </head>
 <body>
+  <div id="ldOverlay">
+    <div class="ld-wrap">
+      <div class="ld-bar">
+        <div class="ld-brand">
+          <img src="/logo.png" alt="Firebreak" style="object-fit:cover"
+               onerror="this.style.display='none';document.getElementById('ldMark').style.display='flex'">
+          <svg id="ldMark" viewBox="0 0 64 64" width="34" height="34" aria-hidden="true" style="display:none">
+            <rect width="64" height="64" rx="15" fill="#0e766e"/>
+            <path d="M20 26a12 12 0 0 1 24 0v5h-3a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h3v3a4 4 0 0 1-4 4H27a4 4 0 0 1-4-4v-3h3a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-6v-5z" fill="#fff"/>
+          </svg>
+          <span>Firebreak<small class="ld-sub">Dream-proof investment research</small></span>
+        </div>
+        <div class="ld-nav">
+          <a class="ld-mono" href="/webmcp.json" target="_blank" rel="noopener">webmcp.json</a>
+          <a class="ld-mono" href="/llms.txt" target="_blank" rel="noopener">llms.txt</a>
+          <button class="ld-enter" type="button">Enter the workspace →</button>
+        </div>
+      </div>
+
+      <div class="ld-hero">
+        <div>
+          <span class="ld-kicker"><span class="ld-dot"></span>GOAI · a WebMCP action, not a chatbot</span>
+          <h1>The backtest looks <span class="ld-accent">beautiful.</span> The strategy still doesn&rsquo;t trade.</h1>
+          <p class="ld-sub">The LLM plans the study — <b>deterministic code gates veto anything that only looks good</b>. No order intent is ever written without passing every gate.</p>
+          <div class="ld-chips">
+            <span class="ld-chip"><b>5</b> real actions</span>
+            <span class="ld-chip"><b>42</b> automated tests</span>
+            <span class="ld-chip"><b>PLAN_ONLY</b> LLM authority</span>
+          </div>
+          <div style="margin-top:20px"><button class="ld-enter" type="button">Enter the workspace →</button></div>
+        </div>
+
+        <div class="ld-card">
+          <div class="ld-chrome"><span class="ld-dots"><i></i><i></i><i></i></span><span class="ld-url">POST /api/goai/audit-demo</span></div>
+          <div class="ld-body">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+              <span class="ld-seg">
+                <button type="button" data-scenario="synthetic" class="on bad">UNPROVEN</button>
+                <button type="button" data-scenario="proven">PROVEN</button>
+              </span>
+              <span style="font:11px 'SFMono-Regular',Consolas,monospace;color:#7a8380">toggle evidence → watch the gate</span>
+            </div>
+            <label class="ld-label">RESEARCH TASK</label>
+            <textarea class="ld-task">Validate whether the low-volatility ETF rotation strategy has enough evidence to move from research to paper trading.</textarea>
+            <div class="ld-row">
+              <button class="ld-btn" type="button">Run guarded audit</button>
+              <span class="ld-spin" style="display:none"></span>
+            </div>
+            <div class="ld-result"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ld-pillars">
+        <div class="ld-pillar"><h3>Plan only, never execute</h3><div class="ld-cap">PLAN_ONLY authority</div><p>The model proposes the research sequence. It cannot modify risk rules, override a gate, or create an order intent.</p><span class="ld-tag">VETO &gt; AGENT</span></div>
+        <div class="ld-pillar"><h3>Deterministic veto</h3><div class="ld-cap">code decides, not vibes</div><p>Same engine, both sides: synthetic data gets blocked, production-eligible data can pass. The verdict is reproducible and property-tested.</p><span class="ld-tag">42 PROPERTY TESTS</span></div>
+        <div class="ld-pillar"><h3>Immutable ledger</h3><div class="ld-cap">chain-hashed receipts</div><p>Every gate decision is appended to a chain-hashed audit log. You can re-read it — you can&rsquo;t quietly rewrite it.</p><span class="ld-tag">AUDIT-LEDGER</span></div>
+      </div>
+
+      <div class="ld-note"><span class="ld-imerk">i</span><span>Research / procedural demo — not investment advice, no return promises, and it never places real orders. Deterministic gates hold final authority; no LLM can override them.</span></div>
+
+      <div class="ld-foot">
+        <span>Personal Investment OS · Firebreak — a WebMCP submission</span>
+        <span class="ld-links"><a href="/api/health" target="_blank" rel="noopener">/api/health</a><a href="/webmcp.json" target="_blank" rel="noopener">webmcp.json</a><a href="/llms.txt" target="_blank" rel="noopener">llms.txt</a></span>
+      </div>
+    </div>
+  </div>
   <div class="shell">
     <aside class="sidebar" aria-label="主导航">
       <div class="brand-block">
@@ -200,5 +268,6 @@
   <script src="./financial-skills.js?v=2"></script>
   <script src="./research-ui.js?v=1"></script>
   <script src="./alpha-guard.js?v=1"></script>
+  <script src="./landing-panel.js?v=1"></script>
 </body>
 </html>
