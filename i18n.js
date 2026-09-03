@@ -55,7 +55,7 @@
     "Enter the workspace →": "进入工作区 →",
     "Enter the workspace": "进入工作区",
     "Dream-proof investment research": "可防梦的投资研究",
-    "GOAI · a WebMCP action, not a chatbot": "GOAI · 一个 WebMCP 行动，而非聊天机器人",
+    "A WebMCP action, not a chatbot": "一个 WebMCP 行动，而非聊天机器人",
     "The backtest looks": "回测看上去",
     "beautiful.": "非常漂亮。",
     "The strategy still doesn&rsquo;t trade.": "但策略仍然不会去交易。",
@@ -93,7 +93,6 @@
     "No gate records": "无门禁记录",
 
     /* ---- Firebreak view ---- */
-    "GOAI · AGENT FOR FINANCE": "GOAI · 面向金融的智能体",
     "checking planner…": "检测规划器中…",
     "A backtest that looks great.": "一个看起来很棒的回测。",
     "Still, it refuses to trade.": "但它仍然拒绝交易。",
