@@ -7,6 +7,8 @@ __pycache__/
 *.egg-info/
 .mypy_cache/
 .ruff_cache/
+build/
+dist/
 
 # Env & local data
 .env
