@@ -44,6 +44,7 @@
     document.getElementById('backtestEndLabel').textContent = report.period.end.slice(0, 4);
     const warnings = [...(report.data_quality?.warnings || []), ...(report.warnings || [])];
     document.getElementById('backtestWarnings').textContent = `${report.dataset_kind === 'SYNTHETIC_DEMO' ? 'Synthetic demo data: not a representation of real returns.' : 'User-data backtest: results apply to this data snapshot only.'} ${warnings.join(' ') || 'Data quality check passed.'}`;
+    window.PIOApplyI18n?.(document.getElementById('backtestView'));
   }
 
   async function run(buttonElement) {

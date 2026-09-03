@@ -48,6 +48,7 @@
     row.classList.remove('running', 'completed', 'blocked');
     row.classList.add(state);
     row.querySelector('b').textContent = label;
+    window.PIOApplyI18n?.(row);
   }
 
   function startTraceProgress() {
@@ -97,6 +98,7 @@
     });
     const blockedCount = checks.filter((check) => check.status === 'BLOCKED').length;
     document.getElementById('alphaGateCount').textContent = `${blockedCount} / ${checks.length} blocked`;
+    window.PIOApplyI18n?.(list);
   }
 
   function renderReceipts(trace) {
@@ -119,6 +121,7 @@
       item.append(index, copy, evidence);
       list.append(item);
     });
+    window.PIOApplyI18n?.(list);
   }
 
   function renderResult(data) {
@@ -140,12 +143,14 @@
     renderGates(checks);
     renderReceipts(data.trace);
     resultPanel.hidden = false;
+    window.PIOApplyI18n?.(resultPanel);
   }
 
   async function runAudit() {
     const task = taskInput.value.trim();
     if (task.length < 8) {
       errorPanel.textContent = 'Describe the strategy to audit in one complete sentence.';
+      window.PIOApplyI18n?.(errorPanel);
       errorPanel.hidden = false;
       taskInput.focus();
       return;
@@ -178,6 +183,7 @@
       const running = traceRows.findIndex((row) => row.classList.contains('running'));
       if (running >= 0) setTraceState(running, 'blocked', 'Failed');
       errorPanel.textContent = `Audit incomplete: ${error.message}`;
+      window.PIOApplyI18n?.(errorPanel);
       errorPanel.hidden = false;
       document.getElementById('alphaRunId').textContent = 'Audit failed';
     } finally {

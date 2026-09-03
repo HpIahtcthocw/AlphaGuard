@@ -2,6 +2,7 @@ window.executeDemoPaperPlan = async function executeDemoPaperPlan(button) {
   const original = button.textContent;
   if (localStorage.getItem('pio.plan.PLAN-018.status') === 'FILLED') {
     button.disabled = true; button.textContent = 'Simulated fill done';
+    window.PIOApplyI18n?.(button);
     window.pioShowToast?.('This plan already executed; idempotency guard blocked a duplicate fill.');
     return;
   }
@@ -50,6 +51,7 @@ window.executeDemoPaperPlan = async function executeDemoPaperPlan(button) {
       button.textContent = 'Simulated fill done';
       button.closest('.plan-card')?.querySelector('.tag')?.classList.replace('teal', 'green');
       const tag = button.closest('.plan-card')?.querySelector('.tag'); if (tag) tag.textContent = 'Filled';
+      window.PIOApplyI18n?.(button.closest('.plan-card') || button);
       window.pioShowToast?.(`Paper fill done: sold ${result.fill.quantity} × 510300 at ¥${result.fill.fill_price}; audit record appended to ledger.`);
       return;
     }

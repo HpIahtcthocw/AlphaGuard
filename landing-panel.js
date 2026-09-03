@@ -33,10 +33,12 @@
         var verdict='<div class="ld-verdict '+(blocked?'blocked':'eligible')+'"><span class="ld-badge">'+(blocked?'BLOCKED':'ELIGIBLE')+'</span><span class="ld-t">'+esc(d.headline)+'</span></div>';
         var lock='<span class="ld-lock"><span class="ld-dot2'+(d.order_intent_created?'':' red')+'"></span>'+(d.order_intent_created?'ORDER INTENT WRITTEN':'ORDER INTENT — NOT CREATED')+'</span>';
         res.innerHTML=verdict+lock+'<div class="ld-gates">'+(gates||'<div class="ld-gate"><b>No gate records</b></div>')+'</div>';
+        window.PIOApplyI18n?.(res);
       })
       .catch(function(e){
         res.style.display='flex';
         res.innerHTML='<div class="ld-verdict blocked"><span class="ld-badge">ERROR</span><span class="ld-t">'+esc(String(e))+'</span></div>';
+        window.PIOApplyI18n?.(res);
       })
       .finally(function(){btn.disabled=false;spin.style.display='none';});
   }
